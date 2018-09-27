@@ -1,0 +1,28 @@
+---
+- name: manage libvirt guests 
+  user: ansible 
+  hosts: barelaptop
+  vars:
+      project_name: C
+
+  tasks:
+# not going to do xml_lookup just for a template, thank you. 
+# going with 'command" module and virt-clone
+    - name: create VM Project{{ project_name }}Win1 by cloning image
+      command: "virt-clone --original=Winselnble-auth-winrm --name=Project{{ project_name }}Win1 --auto-clone"
+    
+- name: start new VM
+  user: ansible 
+  hosts: barelaptop
+  vars:
+      project_name: C
+
+  tasks:
+    - name: start VM Project{{ project_name }}Win1
+      virt:
+          name: Project{{ project_name }}Win1
+          state: running
+
+    - name: allow DHCP/DNS to register
+      pause:
+        minutes: 1

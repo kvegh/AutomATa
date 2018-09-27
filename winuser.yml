@@ -1,0 +1,19 @@
+---
+- name: Password
+  hosts: win_vms
+  vars:
+    ansible_user: ansible
+    ansible_password: Ansi-Bell
+    ansible_connection: winrm
+    ansible_port: 5985
+    ansible_winrm_transport: basic
+
+  tasks:
+    - name: Add user
+      win_user: 
+        name: bob
+        password: B0bpass1
+        state: present
+        groups: 
+          - Administrators
+

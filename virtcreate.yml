@@ -1,0 +1,49 @@
+---
+- name: manage libvirt guests 
+  user: ansible 
+  hosts: barelaptop
+  vars:
+      project_name: C
+
+  tasks:
+# not going to do xml_lookup just for a template, thank you. 
+# going with 'command" module and virt-clone
+    - name: create VM Project{{ project_name }}1 by cloning image
+      command: "virt-clone --original=rhel7base-clone --name=Project{{ project_name }}1 --auto-clone"
+    - name: create VM Project{{ project_name }}2 by cloning image
+      command: "virt-clone --original=rhel7base-clone --name=Project{{ project_name }}2 --auto-clone"
+    - name: create VM Project{{ project_name }}3 by cloning image
+      command: "virt-clone --original=rhel7base-clone --name=Project{{ project_name }}3 --auto-clone"
+    
+    - name: sysprep VM Project{{ project_name }}1
+      command: "virt-sysprep -d Project{{ project_name }}1 --hostname Project{{ project_name }}1 --operations defaults,-ssh-userdir" 
+    - name: sysprep VM Project{{ project_name }}2
+      command: "virt-sysprep -d Project{{ project_name }}2 --hostname Project{{ project_name }}2 --operations defaults,-ssh-userdir" 
+    - name: sysprep VM Project{{ project_name }}3
+      command: "virt-sysprep -d Project{{ project_name }}3 --hostname Project{{ project_name }}3 --operations defaults,-ssh-userdir" 
+
+- name: start new guests 
+  user: ansible 
+  hosts: barelaptop
+  vars:
+      project_name: C
+
+  tasks:
+    - name: start VM Project{{ project_name }}1
+      virt:
+          name: Project{{ project_name }}1
+          state: running
+
+    - name: start VM Project{{ project_name }}2
+      virt:
+          name: Project{{ project_name }}2
+          state: running
+
+    - name: start VM Project{{ project_name }}3
+      virt:
+          name: Project{{ project_name }}3
+          state: running
+
+    - name: allow DHCP/DNS to register
+      pause:
+        minutes: 1

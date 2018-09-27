@@ -1,0 +1,33 @@
+---
+- name: manage libvirt guests 
+  user: ansible 
+  hosts: barelaptop
+  
+  tasks:
+    - name: stop all project VMs - ProjectX1
+      virt:
+          name: ProjectX1
+          state: destroyed
+
+    - name: stop all project VMs - ProjectX2
+      virt:
+          name: ProjectX2
+          state: destroyed
+
+    - name: stop all project VMs - ProjectX3
+      virt:
+          name: ProjectX3
+          state: destroyed
+
+- name: remove disks of VMs
+  user: ansible 
+  hosts: barelaptop
+  
+  tasks:
+    - name: drop ProjectX1 VM config
+      command: "virsh undefine ProjectX1 --remove-all-storage"
+    - name: drop project B VM 2 config
+      command: "virsh undefine ProjectX2 --remove-all-storage"
+    - name: drop project B VM 3 config
+      command: "virsh undefine ProjectX3 --remove-all-storage"
+    

@@ -1,0 +1,45 @@
+---
+- name: manage libvirt guests 
+  user: ansible 
+  hosts: barelaptop
+
+  tasks:
+# not going to do xml_lookup just for a template, thank you. 
+# going with 'command" module and virt-clone
+    - name: create VM ProjectX1 by cloning image
+      command: "virt-clone --original=rhel7base-clone --name=ProjectX1 --auto-clone"
+    - name: create VM ProjectX2 by cloning image
+      command: "virt-clone --original=rhel7base-clone --name=ProjectX2 --auto-clone"
+    - name: create VM ProjectX3 by cloning image
+      command: "virt-clone --original=rhel7base-clone --name=ProjectX3 --auto-clone"
+    
+    - name: sysprep VM ProjectX1
+      command: "virt-sysprep -d ProjectX1 --hostname ProjectX1 --operations defaults,-ssh-userdir" 
+    - name: sysprep VM ProjectX2
+      command: "virt-sysprep -d ProjectX2 --hostname ProjectX2 --operations defaults,-ssh-userdir" 
+    - name: sysprep VM ProjectX3
+      command: "virt-sysprep -d ProjectX3 --hostname ProjectX3 --operations defaults,-ssh-userdir" 
+
+- name: start new guests 
+  user: ansible 
+  hosts: barelaptop
+
+  tasks:
+    - name: start VM ProjectX1
+      virt:
+          name: ProjectX1
+          state: running
+
+    - name: start VM ProjectX2
+      virt:
+          name: ProjectX2
+          state: running
+
+    - name: start VM ProjectX3
+      virt:
+          name: ProjectX3
+          state: running
+
+    - name: allow DHCP/DNS to register
+      pause:
+        minutes: 1

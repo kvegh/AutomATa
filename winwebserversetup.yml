@@ -1,0 +1,23 @@
+---
+- name: webserver setup
+  user: ansible 
+  hosts: win_vms
+  vars:
+    ansible_user: ansible
+    ansible_password: Ansi-Bell
+    ansible_connection: winrm
+    ansible_port: 5985
+    ansible_winrm_transport: basic
+
+  tasks:
+  - name: Install IIS Web-Server with sub features and management tools
+    win_feature:
+      name: Web-Server
+      state: present
+      include_sub_features: yes
+      include_management_tools: yes
+    register: win_feature
+
+  - name: reboot if installing Web-Server feature requires it
+    win_reboot:
+    when: win_feature.reboot_required

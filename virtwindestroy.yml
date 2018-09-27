@@ -1,0 +1,23 @@
+---
+- name: manage libvirt guests 
+  user: ansible 
+  hosts: barelaptop
+  vars:
+      project_name: C
+  
+  tasks:
+    - name: stop all project VMs - Project{{ project_name }}Win1
+      virt:
+          name: Project{{ project_name }}Win1
+          state: destroyed
+
+- name: remove disks of VMs
+  user: ansible 
+  hosts: barelaptop
+  vars:
+      project_name: C
+  
+  tasks:
+    - name: drop Project{{ project_name }}Win1 VM config
+      command: "virsh undefine Project{{ project_name }}Win1 --remove-all-storage"
+    

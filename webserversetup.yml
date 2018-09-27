@@ -1,0 +1,26 @@
+---
+- name: webserver setup
+  user: ansible 
+  hosts: linux_vms
+
+  tasks:
+    - name: install webserver pkg
+      yum:
+        name: httpd
+        state: present
+
+    - name: enable webserver
+      systemd:
+        name: httpd
+        state: started
+
+    - name: Open port 80
+      firewalld: 
+        service: http 
+        permanent: true 
+        state: enabled
+
+    - name: start the firewalld service
+      systemd:
+        name: firewalld
+        state: restarted
