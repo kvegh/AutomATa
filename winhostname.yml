@@ -1,0 +1,21 @@
+---
+- name: Password
+  hosts: win_vms
+  vars:
+    ansible_user: ansible
+    ansible_password: Ansi-Bell
+    ansible_connection: winrm
+    ansible_port: 5985
+    ansible_winrm_transport: basic
+    project_name: D
+
+  tasks:
+    - name: Change the hostname to new_hostname
+      win_hostname:
+        name: "{{ project_name }}win1"
+      register: win_hostname
+
+    - name: reboot to get new hostname take effect
+      win_reboot: 
+      when: win_hostname.reboot_required
+

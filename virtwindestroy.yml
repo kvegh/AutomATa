@@ -3,21 +3,21 @@
   user: ansible 
   hosts: barelaptop
   vars:
-      project_name: C
+      project_name: D
   
   tasks:
-    - name: stop all project VMs - Project{{ project_name }}Win1
+    - name: stop all project VMs - {{ project_name }}win1
       virt:
-          name: Project{{ project_name }}Win1
+          name: "{{ project_name }}win1"
           state: destroyed
 
 - name: remove disks of VMs
   user: ansible 
   hosts: barelaptop
   vars:
-      project_name: C
+      project_name: D
   
   tasks:
-    - name: drop Project{{ project_name }}Win1 VM config
-      command: "virsh undefine Project{{ project_name }}Win1 --remove-all-storage"
+    - name: drop {{ project_name }}win1 VM config
+      command: "virsh undefine {{ project_name }}win1 --remove-all-storage"
     
