@@ -9,7 +9,7 @@
   tasks:
     - name: stop all project VMs - {{ project_name }}{{ item }}
       virt:
-          name: "{{ project_name }}{{ item }}"
+          name: "{{ project_name }}"
           state: destroyed
       with_sequence: count={{ number_of_hosts }}
 
@@ -22,7 +22,7 @@
       number_of_hosts: 3
   
   tasks:
-    - name: drop VM {{ project_name }}{{ item }} VM config
+    - name: drop VM {{ project_name }} VM config
       command: "virsh undefine {{ project_name }}{{ item }} --remove-all-storage"
       with_sequence: count={{ number_of_hosts }}
     

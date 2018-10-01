@@ -3,25 +3,29 @@
   user: ansible 
   hosts: barelaptop
   vars:
-      project_name: D
+      project_name: web
+      number_of_hosts: 2
 
   tasks:
 # not going to do xml_lookup just for a template, thank you. 
 # going with 'command" module and virt-clone
-    - name: create VM {{ project_name }}win1 by cloning image
-      command: "virt-clone --original=win-image --name={{ project_name }}win1 --auto-clone"
+    - name: create VM {{ project_name }}-win by cloning image
+      command: "virt-clone --original=win-image --name={{ project_name }}-win{{ item }} --auto-clone"
+      with_sequence: count={{ number_of_hosts }}
 
 - name: start new VM
   user: ansible 
   hosts: barelaptop
   vars:
-      project_name: D
+      project_name: web
+      number_of_hosts: 2
 
   tasks:
-    - name: start VM {{ project_name }}win1
+    - name: start VM {{ project_name }}-win
       virt:
-          name: "{{ project_name }}win1"
+          name: "{{ project_name }}-win{{ item }}"
           state: running
+      with_sequence: count={{ number_of_hosts }}
     
     - name: allow DHCP/DNS to register
       pause:
