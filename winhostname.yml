@@ -7,15 +7,17 @@
     ansible_connection: winrm
     ansible_port: 5985
     ansible_winrm_transport: basic
-    project_name: D
+    project_name: web
+    number_of_hosts: 2
+    os_type: win
 
   tasks:
     - name: Change the hostname to new_hostname
       win_hostname:
-        name: "{{ project_name }}win1"
-      register: win_hostname
+        name: "{{ os_type }}-{{ project_name }}{{ item }}"
+      with_sequence: count={{ number_of_hosts }}
+      register: res
 
     - name: reboot to get new hostname take effect
       win_reboot: 
-      when: win_hostname.reboot_required
-
+#      when: res.reboot_required
