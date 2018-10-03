@@ -11,8 +11,8 @@
   tasks:
 # not going to do xml_lookup just for a template, thank you. 
 # going with 'command" module and virt-clone
-    - name: create VM {{ project_name }}-{{os_type}} by cloning image
-      command: "virt-clone --original=win-image --name={{ project_name }}-{{ os_type }}{{ item }} --auto-clone"
+    - name: create VM {{ os_type }}-{{ project_name }} items by cloning image
+      command: "virt-clone --original=win-image --name={{ os_type }}-{{ project_name }}{{ item }} --auto-clone"
       with_sequence: count={{ number_of_hosts }}
 
 - name: start new VM
@@ -21,11 +21,12 @@
   vars:
       project_name: web
       number_of_hosts: 1
+      os_type: win
 
   tasks:
-    - name: start VM {{ project_name }}-{{ os_type }}
+    - name: start VM {{ os_type }}-{{ project_name }} items
       virt:
-          name: "{{ project_name }}-{{ os_type }}{{ item }}"
+          name: "{{ os_type }}-{{ project_name }}{{ item }}"
           state: running
       with_sequence: count={{ number_of_hosts }}
     

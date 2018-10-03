@@ -10,11 +10,11 @@
   tasks:
 # not going to do xml_lookup just for a template, thank you. 
 # going with 'command" module and virt-clone
-    - name: create VM {{ project_name }} by cloning image
+    - name: create VM {{ os_type }}-{{ project_name }} items by cloning image
       command: "virt-clone --original={{ os_type }}-image --name={{ os_type }}-{{ project_name }}{{ item }} --auto-clone"
       with_sequence: count={{ number_of_hosts }}
 
-    - name: sysprep VM {{ project_name }}
+    - name: sysprep VM {{ os_type }}-{{ project_name }} items
       command: "virt-sysprep -d {{ os_type }}-{{ project_name }}{{ item }} --hostname {{ os_type }}-{{ project_name }}{{ item }} --operations defaults,-ssh-userdir" 
       with_sequence: count={{ number_of_hosts }}
     
@@ -27,7 +27,7 @@
       os_type: rhel
 
   tasks:
-    - name: start VM "{{ project_name }}"
+    - name: start VM "{{ os_type }}-{{ project_name }} items"
       virt:
           name: "{{ os_type }}-{{ project_name }}{{ item }}"
           state: running
