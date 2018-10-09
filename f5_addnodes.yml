@@ -1,0 +1,23 @@
+---
+- name: Create a VIP, pool
+  hosts: f5
+  connection: local
+
+  tasks:
+   - name: add nodes to pool
+     bigip_pool_member:
+       description: webserver-1
+       host: "{{ item.host }}"
+       name: "{{ item.name }}"
+       password: admin
+       pool: web-pool
+       port: 80
+       server: f5
+       user: admin
+       validate_certs: no
+     delegate_to: localhost
+     with_items:
+      - host: 192.168.122.77
+        name: node-1
+      - host: 192.168.122.187
+        name: node-2

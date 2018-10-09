@@ -1,0 +1,17 @@
+---
+- name: Create a VIP, pool
+  hosts: f5
+  connection: local
+
+  tasks:
+   - name: Create a pool
+     bigip_pool:
+         lb_method: ratio-member
+         name: web-pool
+         password: admin
+         server: f5
+         slow_ramp_time: 120
+         user: admin
+         validate_certs: no
+         state: absent
+     delegate_to: localhost

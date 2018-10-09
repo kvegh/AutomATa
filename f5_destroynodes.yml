@@ -1,0 +1,27 @@
+---
+- name: Create a VIP, pool
+  hosts: f5
+  connection: local
+
+  tasks:
+  - name: Create node1
+    bigip_node:
+      host: 192.168.122.77
+      name: node-1
+      password: admin
+      server: f5
+      user: admin
+      validate_certs: no
+      state: absent
+    delegate_to: localhost
+
+  - name: Create node2
+    bigip_node:
+      host: 192.168.122.187
+      name: node-2
+      password: admin
+      server: f5
+      user: admin
+      validate_certs: no
+      state: absent
+    delegate_to: localhost

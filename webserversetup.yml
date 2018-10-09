@@ -1,7 +1,7 @@
 ---
 - name: webserver setup
   user: ansible 
-  hosts: linux_vms
+  hosts: rhel_vms
 
   tasks:
     - name: install webserver pkg

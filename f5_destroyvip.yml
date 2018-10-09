@@ -1,0 +1,23 @@
+---
+- name: Create a VIP on the pool
+  hosts: f5
+  connection: local
+
+  tasks:
+  - name: Create a VIP
+    bigip_virtual_server:
+      description: foo-vip
+      destination: 192.168.122.199
+      password: admin
+      name: vip-1
+      pool: web-pool
+      port: 80
+      server: f5
+      snat: Automap
+      user: admin
+      state: absent
+      all_profiles:
+           - http
+           - clientssl
+      validate_certs: no
+    delegate_to: localhost
