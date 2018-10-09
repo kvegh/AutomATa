@@ -1,0 +1,16 @@
+---
+- name: Create a VIP, pool
+  hosts: f5
+  connection: local
+
+  tasks:
+   - name: Create a VLAN 
+     bigip_vlan:
+         untagged_interfaces: 1.1
+         name: web-vlan1
+         password: admin
+         server: f5
+         user: admin
+         validate_certs: no
+         state: absent
+     delegate_to: localhost

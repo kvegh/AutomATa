@@ -14,6 +14,7 @@
   tasks:
     - name: Change the hostname to new_hostname
       win_hostname:
+        old_name: WIN-I3PMFO2H7D5
         name: "{{ os_type }}-{{ project_name }}{{ item }}"
       with_sequence: count={{ number_of_hosts }}
       register: res

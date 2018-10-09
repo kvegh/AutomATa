@@ -9,7 +9,7 @@ gateway
 [win_vms]
 __EOF__
 
-for host in `grep win inv_input` ; do echo ${host} ansible_host=`ssh ansible@gateway "sudo virsh domifaddr $host" | grep ipv4 | awk '{print $4}' | cut -d/ -f1` ; done >> inventory
+for host in `grep win inv_input` ; do echo ${host} ansible_host=`ssh ansible@gateway "sudo virsh domifaddr $host" | grep 192.168.122 | awk '{print $4}' | cut -d/ -f1` ; done >> inventory
 echo -e "\n[rhel_vms]" >> inventory 
 grep rhel inv_input >> inventory 
 
