@@ -1,22 +1,11 @@
 ---
-- name: Password
+- name: set local hostname 
   hosts: win_vms
-  vars:
-    ansible_user: ansible
-    ansible_password: Ansi-Bell
-    ansible_connection: winrm
-    ansible_port: 5985
-    ansible_winrm_transport: basic
-    project_name: web
-    number_of_hosts: 2
-    os_type: win
 
   tasks:
     - name: Change the hostname to new_hostname
       win_hostname:
-        old_name: WIN-I3PMFO2H7D5
-        name: "{{ os_type }}-{{ project_name }}{{ item }}"
-      with_sequence: count={{ number_of_hosts }}
+        name: "{{ inventory_hostname }}"
       register: res
 
     - name: reboot to get new hostname take effect

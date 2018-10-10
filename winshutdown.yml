@@ -1,12 +1,6 @@
 ---
 - name: shutdown
   hosts: win_vms
-  vars:
-    ansible_user: ansible
-    ansible_password: Ansi-Bell
-    ansible_connection: winrm
-    ansible_port: 5985
-    ansible_winrm_transport: basic
 
   tasks:
     - name: shutdown
