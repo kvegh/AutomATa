@@ -2,7 +2,7 @@
 - name: define and add webserver nodes to the loadbalancer
   hosts:
   - rhel_vms
-#   - win_vms
+  - win_vms
   gather_facts: True
 
   tasks:
@@ -13,7 +13,22 @@
        server: f5
        user: admin
        validate_certs: no
+     when: ansible_os_family == "RedHat"
      delegate_to: localhost
+   
+   - bigip_node:
+       host: "{{ ansible_ip_addresses[2] }}"
+       name: "{{ inventory_hostname }}"
+       password: admin
+       server: f5
+       user: admin
+       validate_certs: no
+     when: ansible_os_family == "Windows"
+     delegate_to: localhost
+   
+   
+   - debug: var=ansible_distribution
+   - debug: var=ansible_ip_addresses[2]
 
 #  - debug: var=ansible_eth1.ipv4.address
 #  - debug: var=ansible_devices.vda.partitions.vda1.size 

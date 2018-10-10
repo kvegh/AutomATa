@@ -1,6 +1,8 @@
 ---
 - name: Create a VIP, pool
-  hosts: f5
+  hosts:
+  - rhel_vms
+  - win_vms
   connection: local
 
   tasks:

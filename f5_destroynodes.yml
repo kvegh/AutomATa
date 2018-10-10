@@ -1,27 +1,36 @@
 ---
-- name: Create a VIP, pool
-  hosts: f5
-  connection: local
+- name: define and add webserver nodes to the loadbalancer
+  hosts:
+  - rhel_vms
+  - win_vms
+  gather_facts: True
 
   tasks:
-  - name: Create node1
-    bigip_node:
-      host: 192.168.122.77
-      name: node-1
-      password: admin
-      server: f5
-      user: admin
-      validate_certs: no
-      state: absent
-    delegate_to: localhost
+   - bigip_node:
+       host: "{{ ansible_eth1.ipv4.address }}"
+       name: "{{ inventory_hostname }}"
+       password: admin
+       server: f5
+       user: admin
+       validate_certs: no
+       state: absent
+     when: ansible_os_family == "RedHat"
+     delegate_to: localhost
+   
+   - bigip_node:
+       host: "{{ ansible_ip_addresses[2] }}"
+       name: "{{ inventory_hostname }}"
+       password: admin
+       server: f5
+       user: admin
+       validate_certs: no
+       state: absent
+     when: ansible_os_family == "Windows"
+     delegate_to: localhost
+   
+   
+   - debug: var=ansible_distribution
+   - debug: var=ansible_ip_addresses[2]
 
-  - name: Create node2
-    bigip_node:
-      host: 192.168.122.187
-      name: node-2
-      password: admin
-      server: f5
-      user: admin
-      validate_certs: no
-      state: absent
-    delegate_to: localhost
+#  - debug: var=ansible_eth1.ipv4.address
+#  - debug: var=ansible_devices.vda.partitions.vda1.size 
