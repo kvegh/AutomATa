@@ -2,4 +2,14 @@
 gateway
 
 [win_vms]
-WIN-I3PMFO2H7D5
+win-web1 ansible_host=192.168.122.248
+win-web2 ansible_host=192.168.122.49
+win-web3 ansible_host=192.168.122.171
+
+[rhel_vms]
+rhel-web1
+rhel-web2
+rhel-web3
+
+[network]
+f5
