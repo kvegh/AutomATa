@@ -29,8 +29,8 @@
      delegate_to: localhost
    
    
-   - debug: var=ansible_distribution
-   - debug: var=ansible_ip_addresses[2]
+#   - debug: var=ansible_distribution
+#   - debug: var=ansible_ip_addresses[2]
 
 #  - debug: var=ansible_eth1.ipv4.address
 #  - debug: var=ansible_devices.vda.partitions.vda1.size 

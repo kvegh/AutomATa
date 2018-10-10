@@ -14,4 +14,7 @@
          user: admin
          validate_certs: no
          state: present
+         partition: Common
+         monitors:
+           - http
      delegate_to: localhost
