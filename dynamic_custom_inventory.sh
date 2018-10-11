@@ -18,7 +18,7 @@ echo "f5" >> inventory
 
 if [ "$1" == "--list" ] ; then
 
-python inventory2json.py inventory
+python ../inventory2json.py inventory
 
 elif [ "$1" == "--host" ]; then
   echo '{"_meta": {"hostvars": {}}}'
