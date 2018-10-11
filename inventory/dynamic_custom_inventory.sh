@@ -2,23 +2,23 @@
 
 ssh ansible@gateway "sudo virsh list --state-running --name" | grep -v ansible | grep -v ^$ > inv_input
 
-cat <<__EOF__ > inventory
+cat <<__EOF__ > inventory/hosts
 [barelaptop]
 gateway
 
 [win_vms]
 __EOF__
 
-for host in `grep win inv_input` ; do echo ${host} ansible_host=`ssh ansible@gateway "sudo virsh domifaddr $host" | grep 192.168.122 | awk '{print $4}' | cut -d/ -f1` ; done >> inventory
-echo -e "\n[rhel_vms]" >> inventory 
-grep rhel inv_input >> inventory 
+for host in `grep win inv_input` ; do echo ${host} ansible_host=`ssh ansible@gateway "sudo virsh domifaddr $host" | grep 192.168.122 | awk '{print $4}' | cut -d/ -f1` ; done >> inventory/hosts
+echo -e "\n[rhel_vms]" >> inventory/hosts
+grep rhel inv_input >> inventory/hosts
 
-echo -e "\n[network]" >> inventory
-echo "f5" >> inventory 
+echo -e "\n[network]" >> inventory/hosts
+echo "f5" >> inventory/hosts
 
 if [ "$1" == "--list" ] ; then
 
-python ../inventory2json.py inventory/inventory
+python inventory2json.py inventory/hosts
 
 elif [ "$1" == "--host" ]; then
   echo '{"_meta": {"hostvars": {}}}'
