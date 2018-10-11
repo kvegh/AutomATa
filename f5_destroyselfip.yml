@@ -14,5 +14,5 @@
          server: f5
          user: admin
          validate_certs: no
-         state: present
+         state: absent
      delegate_to: localhost

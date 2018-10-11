@@ -11,7 +11,7 @@
       password: admin
       name: vip-1
       pool: web-pool
-      port: 80
+      port: 443
       server: f5
       snat: Automap
       user: admin
