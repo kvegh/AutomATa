@@ -4,7 +4,7 @@
   hosts: barelaptop
   vars:
       project_name: web
-      number_of_hosts: 1
+      number_of_hosts: 2
       os_type: win
 
 
