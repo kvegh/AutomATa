@@ -1,0 +1,17 @@
+
+# TODO for later
+
+# use proper virt module commands, like: 
+
+- name: manage libvirt guests 
+  user: ansible 
+  hosts: barelaptop
+
+  tasks:
+   - name: get list of vms
+     virt: command=list_vms
+     register: virt_vms
+
+   - debug: var=virt_vms
+
+For further info see: https://github.com/sfromm/ansible-playbooks/blob/master/virt-guests.yml
