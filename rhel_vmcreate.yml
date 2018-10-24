@@ -18,6 +18,10 @@
       command: "virt-sysprep -d {{ os_type }}-{{ project_name }}{{ item }} --hostname {{ os_type }}-{{ project_name }}{{ item }} --operations defaults,-ssh-userdir" 
       with_sequence: count={{ number_of_hosts }}
     
+    - name: set description to {{ os_type }}-{{ project_name }} items
+      command: "virsh desc {{ os_type }}-{{ project_name }}{{ item }} --title {{ os_type }}-{{ project_name }}{{ item }}"
+      with_sequence: count={{ number_of_hosts }}
+    
 - name: start new guests 
   user: ansible 
   hosts: barelaptop
