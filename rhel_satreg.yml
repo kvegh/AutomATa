@@ -1,0 +1,37 @@
+---
+- name: satellite preparation
+  user: ansible 
+  hosts: rhel_vms
+
+  tasks:
+    - name: make sure ntpd client service is enabled
+      systemd:
+        name: chronyd
+        enabled: yes
+
+    - name: make sure ntpd client is running
+      systemd:
+        name: chronyd
+        state: started
+
+    - name: make sure rhsmcertd is running
+      systemd:
+        name: rhsmcertd
+        state: started
+
+    - name: download katello rpm for retistration from satellite
+      get_url:
+        url: http://satellite.example.com/pub/katello-ca-consumer-latest.noarch.rpm
+        dest: /var/tmp
+
+    - name: install RPM with yum
+      yum: 
+        name: /var/tmp/katello-ca-consumer-latest.noarch.rpm
+        state: present
+
+    - name: Register to satellite with activationkey and consume subscriptions 
+      redhat_subscription:
+        state: present
+        activationkey: NewKey_1
+        org_id: SuperCorp
+        auto_attach: true
