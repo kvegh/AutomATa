@@ -4,6 +4,11 @@
   hosts: rhel_vms
 
   tasks:
+    - name: sync /etc/hosts
+      copy:
+        src: /etc/hosts
+        dest: /etc
+
     - name: make sure ntpd client service is enabled
       systemd:
         name: chronyd

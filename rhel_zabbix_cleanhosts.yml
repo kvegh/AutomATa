@@ -9,6 +9,11 @@
         name: zabbix30-agent
         state: latest 
 
+#     - name: Install Zabbix API
+#       yum: 
+#         name: python-pyzabbix
+#         state: latest 
+
     - name: make sure zabbix client service is enabled
       systemd:
         name: zabbix-agent
@@ -32,7 +37,7 @@
           - Template Module ICMP Ping
           - Template OS Linux
         status: enabled
-        state: present
+        state: absent
         interfaces: 
           - type: agent
             main: 1
