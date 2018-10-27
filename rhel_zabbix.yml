@@ -1,0 +1,21 @@
+---
+- name: Setup Zabbix client
+  user: ansible 
+  hosts: rhel_vms
+
+  tasks:
+    - name: Install Zabbix agent
+      yum: 
+        name: zabbix30-agent
+        state: latest 
+
+    - name: make sure zabbix client service is enabled
+      systemd:
+        name: zabbix-agent
+        enabled: yes
+
+    - name: make sure zabbix client is running
+      systemd:
+        name: zabbix-agent
+        state: started
+
