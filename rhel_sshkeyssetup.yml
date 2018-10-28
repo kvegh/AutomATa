@@ -1,0 +1,30 @@
+---
+- name: manage ssh keys
+  hosts: localhost
+  connection: local
+  vars:
+      project_name: web
+      number_of_hosts: 3
+      os_type: rhel
+
+  tasks:
+    - name: remove ssh known_hosts entries locally
+      known_hosts:
+        name: "{{ os_type }}-{{ project_name }}{{ item }}"
+        state: absent 
+      with_sequence: count={{ number_of_hosts }}
+
+    - name: scan for keys
+      command: ssh-keyscan -t ecdsa  "{{ item }}",`dig +short "{{ item }}"`
+      with_items: "{{ groups['rhel_vms'] }}"
+      register: ssh_key_scanned
+
+#    - debug: var=inventory_hostname
+        
+    - name: add ssh known_hosts entries locally
+      known_hosts:
+        name: "{{ item.item }}"
+        state: present
+        path: /home/ansible/.ssh/known_hosts
+        key: "{{ item.stdout }}"
+      with_items: "{{ ssh_key_scanned.results }}"

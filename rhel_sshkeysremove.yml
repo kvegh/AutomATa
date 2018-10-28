@@ -1,0 +1,15 @@
+---
+- name: manage libvirt guests 
+  hosts: localhost
+  connection: local
+  vars:
+      project_name: web
+      number_of_hosts: 3
+      os_type: rhel
+
+  tasks:
+    - name: remove ssh known_hosts entries locally
+      known_hosts:
+        name: "{{ os_type }}-{{ project_name }}{{ item }}"
+        state: absent 
+      with_sequence: count={{ number_of_hosts }}
