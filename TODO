@@ -15,3 +15,11 @@
    - debug: var=virt_vms
 
 For further info see: https://github.com/sfromm/ansible-playbooks/blob/master/virt-guests.yml
+
+# document winRM setup: 
+
+https://github.com/qwsj/win-zabbix-agent
+
+# setup windows Zabbix agent: 
+
+https://github.com/qwsj/win-zabbix-agent
