@@ -1,25 +1,12 @@
 ---
 - name: Setup Zabbix client
   user: ansible 
-  hosts: rhel_vms
+  hosts: 
+    - rhel_vms
+    - win_vms
 
   tasks:
-    - name: Install Zabbix agent
-      yum: 
-        name: zabbix30-agent
-        state: latest 
-
-#     - name: Install Zabbix API
-#       yum: 
-#         name: python-pyzabbix
-#         state: latest 
-
-    - name: make sure zabbix client service is enabled
-      systemd:
-        name: zabbix-agent
-        enabled: yes
-
-    - name: Create a new host or update an existing host's info
+    - name: Drop hosts from Zabbix
       local_action:
         module: zabbix_host
         server_url: http://zabbix/zabbix
@@ -42,10 +29,4 @@
           - type: agent
             main: 1
             dns: "{{ inventory_hostname }}"
-            ip: "{{ ansible_eth0.ipv4.address }}"
-
-    - name: make sure zabbix client is running
-      systemd:
-        name: zabbix-agent
-        state: started
 
