@@ -40,3 +40,13 @@
         activationkey: NewKey_1
         org_id: SuperCorp
         auto_attach: true
+
+    - name: enable Satellite Host Tools repo 
+      rhsm_repository:
+        name: rhel-7-server-satellite-tools-6.4-rpms
+        state: enabled
+
+    - name: install katello-agent and katello-host-tools
+      yum: 
+        name: katello-agent
+        state: present
