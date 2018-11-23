@@ -11,5 +11,10 @@
     - name: remove ssh known_hosts entries locally
       known_hosts:
         name: "{{ os_type }}-{{ project_name }}{{ item }}"
+        path: /home/ansible/.ssh/known_hosts
         state: absent 
       with_sequence: count={{ number_of_hosts }}
+
+#    - debug: var="{{ os_type }}-{{ project_name }}{{ item }}"
+#      with_sequence: count="{{ number_of_hosts }}"
+

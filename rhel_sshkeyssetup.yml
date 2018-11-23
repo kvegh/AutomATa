@@ -15,11 +15,12 @@
       with_sequence: count={{ number_of_hosts }}
 
     - name: scan for keys
-      command: ssh-keyscan -t ecdsa  "{{ item }}",`dig +short "{{ item }}"`
+      # shell: ssh-keyscan -t ecdsa  {{ item }},$(dig +short {{ item }})
+      shell: ssh-keyscan -t ecdsa  {{ item }}
       with_items: "{{ groups['rhel_vms'] }}"
       register: ssh_key_scanned
 
-#    - debug: var=inventory_hostname
+#    - debug: var=ssh_key_scanned
         
     - name: add ssh known_hosts entries locally
       known_hosts:
