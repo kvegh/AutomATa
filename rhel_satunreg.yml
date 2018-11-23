@@ -1,0 +1,39 @@
+---
+- name: satellite preparation
+  user: ansible 
+  hosts: rhel_vms
+
+  tasks:
+
+    - name: make sure rhsmcertd is running
+      systemd:
+        name: rhsmcertd
+        state: started
+
+    - name: install RPM with yum
+      yum: 
+        name: katello-ca-consumer
+        state: absent
+
+    - name: Unreg from Sat
+      redhat_subscription:
+        state: absent
+        activationkey: NewKey_1
+        org_id: SuperCorp
+
+    - name: remove katello-agent and katello-host-tools
+      yum: 
+        name: 
+          - katello-agent
+          - katello-host-tools
+        state: absent
+
+    - name: drop hosts entry from sat
+      foreman:
+        username: admin
+        password: admin
+        server_url: https://satellite.example.com
+        entity: host
+        params:
+          name: "{{ inventory_hostname }}"
+          state: absent
