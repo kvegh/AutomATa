@@ -2,6 +2,13 @@
 - name: Setup Zabbix client
   user: ansible 
   hosts: rhel_vms
+  vars:
+    firewall_allowed_udp_ports: 
+      - 10050
+      - 10051
+    firewall_allowed_tcp_ports:
+      - 10050
+      - 10051
 
   tasks:
     - name: Install Zabbix agent
@@ -13,6 +20,11 @@
       systemd:
         name: zabbix-agent
         enabled: yes
+
+    - name: copy zabbix config
+      copy: 
+        src: configs/zabbix_agentd.conf
+        dest: /etc/
 
     - name: Create a new host or update an existing host's info
       local_action:
@@ -43,4 +55,27 @@
       systemd:
         name: zabbix-agent
         state: started
+
+    - name: Open ports
+      firewalld: 
+        port: "{{ item }}"
+        permanent: true 
+        state: enabled
+      with_items:
+        - 10050/tcp
+        - 10051/tcp
+    
+    - name: Open port 10050
+      firewalld: 
+        port: "{{ item }}"
+        immediate: true 
+        state: enabled
+      with_items:
+        - 10050/tcp
+        - 10051/tcp
+
+    - name: restart the firewalld service
+      systemd:
+        name: firewalld
+        state: restarted
 
