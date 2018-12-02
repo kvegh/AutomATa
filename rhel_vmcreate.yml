@@ -1,7 +1,7 @@
 ---
 - name: manage libvirt guests 
   user: ansible 
-  hosts: barelaptop
+  hosts: baremetal
   vars:
       project_name: web
       number_of_hosts: 3
@@ -22,16 +22,7 @@
       command: "virsh desc {{ os_type }}-{{ project_name }}{{ item }} --title {{ os_type }}-{{ project_name }}{{ item }}"
       with_sequence: count={{ number_of_hosts }}
     
-- name: start new guests 
-  user: ansible 
-  hosts: barelaptop
-  vars:
-      project_name: web
-      number_of_hosts: 3
-      os_type: rhel
-
-  tasks:
-    - name: start VM "{{ os_type }}-{{ project_name }} items"
+    - name: start guest VMs "{{ os_type }}-{{ project_name }} items"
       virt:
           name: "{{ os_type }}-{{ project_name }}{{ item }}"
           state: running
@@ -40,3 +31,5 @@
     - name: allow DHCP/DNS to register
       pause:
         minutes: 1
+    
+

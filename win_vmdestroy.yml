@@ -14,17 +14,7 @@
           state: destroyed
       with_sequence: count={{ number_of_hosts }}
 
-
-- name: remove disks of VMs
-  user: ansible 
-  hosts: barelaptop
-  vars:
-      project_name: web
-      number_of_hosts: 2
-      os_type: win
-  
-  tasks:
-    - name: drop {{ project_name }}-win VM config
+    - name: drop {{ project_name }}-win VM config with disks
       command: "virsh undefine {{ os_type }}-{{ project_name }}{{ item }} --remove-all-storage"
       with_sequence: count={{ number_of_hosts }}
     

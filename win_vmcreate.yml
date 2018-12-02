@@ -1,7 +1,7 @@
 ---
 - name: manage libvirt guests 
   user: ansible 
-  hosts: barelaptop
+  hosts: baremetal
   vars:
       project_name: web
       number_of_hosts: 2
@@ -19,16 +19,7 @@
       command: "virsh desc {{ os_type }}-{{ project_name }}{{ item }} --title {{ os_type }}-{{ project_name }}{{ item }}"
       with_sequence: count={{ number_of_hosts }}
     
-- name: start new VM
-  user: ansible 
-  hosts: barelaptop
-  vars:
-      project_name: web
-      number_of_hosts: 2
-      os_type: win
-
-  tasks:
-    - name: start VM {{ os_type }}-{{ project_name }} items
+    - name: start guest VMs {{ os_type }}-{{ project_name }} items
       virt:
           name: "{{ os_type }}-{{ project_name }}{{ item }}"
           state: running
