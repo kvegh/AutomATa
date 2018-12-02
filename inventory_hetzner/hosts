@@ -1,0 +1,10 @@
+[baremetal]
+gateway
+hetzner
+
+[win_vms]
+
+[rhel_vms]
+
+[network]
+f5

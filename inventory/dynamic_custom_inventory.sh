@@ -1,10 +1,11 @@
 #!/bin/bash
 
-ssh ansible@gateway "sudo virsh list --state-running --name" | grep -v ansible | grep -v ^$ > inv_input
+ssh ansible@gateway "sudo virsh list --name" | grep -v ansible | grep -v ^$ > inv_input
 
 cat <<__EOF__ > inventory/hosts
-[barelaptop]
+[baremetal]
 gateway
+hetzner
 
 [win_vms]
 __EOF__
