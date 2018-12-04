@@ -20,8 +20,6 @@
       with_items: "{{ groups['rhel_vms'] }}"
       register: ssh_key_scanned
 
-#    - debug: var=ssh_key_scanned
-        
     - name: add ssh known_hosts entries locally
       known_hosts:
         name: "{{ item.item }}"
