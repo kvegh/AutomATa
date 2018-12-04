@@ -14,6 +14,16 @@ for host in `grep win inv_input` ; do echo ${host} ansible_host=`ssh ansible@gat
 echo -e "\n[rhel_vms]" >> inventory_hetzner/hosts
 grep rhel inv_input >> inventory_hetzner/hosts
 
+# Gatewayed VMs on hetzner once again: 
+
+echo -e "\n[infrastructure]" >> inventory_hetzner/hosts
+echo "ansible" >> inventory_hetzner/hosts
+echo -e "\n[gatewayed:children]" >> inventory_hetzner/hosts
+echo -e "rhel_vms" >> inventory_hetzner/hosts
+echo -e "win_vms" >> inventory_hetzner/hosts
+echo -e "infrastructure" >> inventory_hetzner/hosts
+
+
 echo -e "\n[network]" >> inventory_hetzner/hosts
 echo "f5" >> inventory_hetzner/hosts
 
