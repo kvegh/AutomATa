@@ -12,6 +12,11 @@
     - name: enable webserver
       systemd:
         name: httpd
+        enabled: yes
+
+    - name: start webserver
+      systemd:
+        name: httpd
         state: started
 
     - name: Open port 80
