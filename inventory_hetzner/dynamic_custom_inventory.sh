@@ -17,7 +17,9 @@ grep rhel inv_input >> inventory_hetzner/hosts
 # Gatewayed VMs on hetzner once again: 
 
 echo -e "\n[infrastructure]" >> inventory_hetzner/hosts
-echo "ansible" >> inventory_hetzner/hosts
+echo "ansible-h" >> inventory_hetzner/hosts
+echo "satellite-h" >> inventory_hetzner/hosts
+echo "zabbix-h" >> inventory_hetzner/hosts
 echo -e "\n[gatewayed:children]" >> inventory_hetzner/hosts
 echo -e "rhel_vms" >> inventory_hetzner/hosts
 echo -e "win_vms" >> inventory_hetzner/hosts
@@ -25,7 +27,7 @@ echo -e "infrastructure" >> inventory_hetzner/hosts
 
 
 echo -e "\n[network]" >> inventory_hetzner/hosts
-echo "f5" >> inventory_hetzner/hosts
+echo "f5-h" >> inventory_hetzner/hosts
 
 if [ "$1" == "--list" ] ; then
 
