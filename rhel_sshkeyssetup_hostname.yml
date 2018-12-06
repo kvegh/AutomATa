@@ -1,0 +1,28 @@
+---
+- name: manage ssh keys
+  hosts: localhost
+  connection: local
+  vars:
+      project_name: web
+
+  tasks:
+    - name: remove ssh known_hosts entries locally
+      known_hosts:
+        name: "{{ host_name }}"
+        state: absent 
+
+    - name: scan for keys
+      # shell: ssh-keyscan -t ecdsa  {{ item }},$(dig +short {{ item }})
+      shell: ssh-keyscan -t ecdsa  {{ host_name }}
+      with_items: "{{ groups['gatewayed'] }}"
+      register: ssh_key_scanned
+      
+    - debug: var=ssh_key_scanned
+
+    - name: add ssh known_hosts entries locally
+      known_hosts:
+        name: "{{ item.item }}"
+        state: present
+        path: /home/ansible/.ssh/known_hosts
+        key: "{{ item.stdout }}"
+      with_items: "{{ ssh_key_scanned.results }}"

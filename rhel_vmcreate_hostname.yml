@@ -1,0 +1,42 @@
+---
+- name: manage libvirt guests 
+  user: ansible 
+  hosts: baremetal
+  vars:
+      host_name: web
+
+  tasks:
+# not going to do xml_lookup just for a template, thank you. 
+# going with 'command" module and virt-clone
+    - name: create VM {{ host_name }} items by cloning image
+      command: "virt-clone --original=rhel-image --name={{ host_name }} --auto-clone"
+
+    - name: copying ssh keys
+      copy:
+        src: /home/ansible/projects/extra_data/AutomATa/ssh_keys
+        dest: /home/ansible
+
+    - name: sysprep VM {{ host_name }} 
+      command: "virt-sysprep -d {{ host_name }} --hostname {{ host_name }} --operations defaults" 
+
+    - name: sysprep VM plant keys {{ host_name }} items
+      command: "virt-sysprep -d {{ host_name }} --ssh-inject ansible:file:/home/ansible/ssh_keys/ansible_automata.pub --ssh-inject ansible:file:/home/ansible/ssh_keys/ansible_prhel.pub --selinux-relabel" 
+    
+    - name: dropping copied keys
+      file:
+        name: /home/ansible/ssh_keys
+        state: absent
+    
+    - name: set description to {{ host_name }} items
+      command: "virsh desc {{ host_name }} --title {{ host_name }}"
+    
+    - name: start guest VM "{{ host_name }}"
+      virt:
+          name: "{{ host_name }}"
+          state: running
+
+    - name: allow DHCP/DNS to register
+      pause:
+        minutes: 1
+    
+
