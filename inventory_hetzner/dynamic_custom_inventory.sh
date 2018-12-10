@@ -16,6 +16,8 @@ grep rhel inv_input >> inventory_hetzner/hosts
 
 # Gatewayed VMs on hetzner once again: 
 
+echo -e "\n[openshift]" >> inventory_hetzner/hosts
+grep openshift inv_input >> inventory_hetzner/hosts
 echo -e "\n[infrastructure]" >> inventory_hetzner/hosts
 echo "ansible-h" >> inventory_hetzner/hosts
 echo "satellite-h" >> inventory_hetzner/hosts
@@ -24,6 +26,7 @@ echo -e "\n[gatewayed:children]" >> inventory_hetzner/hosts
 echo -e "rhel_vms" >> inventory_hetzner/hosts
 echo -e "win_vms" >> inventory_hetzner/hosts
 echo -e "infrastructure" >> inventory_hetzner/hosts
+echo -e "openshift" >> inventory_hetzner/hosts
 
 
 echo -e "\n[network]" >> inventory_hetzner/hosts
