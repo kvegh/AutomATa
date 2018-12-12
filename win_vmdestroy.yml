@@ -1,7 +1,7 @@
 ---
 - name: manage libvirt guests 
   user: ansible 
-  hosts: barelaptop
+  hosts: baremetal
   vars:
       project_name: web
       number_of_hosts: 2
