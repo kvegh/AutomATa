@@ -1,14 +1,13 @@
 ---
 
 - name: delegated SSH key parsing
-  hosts: localhost
+  hosts: gatewayed
+  connection: local
   gather_facts: no
   tasks:
     - command: "ssh-keyscan -t ecdsa {{ host_name }}"
       register: new_host_fingerprint
       delegate_to: hetzner
-
-    - debug: var=new_host_fingerprint
 
     - lineinfile:
         dest: /home/ansible/.ssh/known_hosts
