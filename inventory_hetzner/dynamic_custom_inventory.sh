@@ -4,7 +4,6 @@ ssh hetzner "sudo virsh list --name --all" | grep -v ansible | grep -v image |  
 
 cat <<__EOF__ > inventory_hetzner/hosts
 [baremetal]
-gateway
 hetzner
 
 [win_vms]
