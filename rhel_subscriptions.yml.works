@@ -1,0 +1,11 @@
+---
+- name: set up hetzner subscription
+  hosts: gatewayed
+
+  tasks: 
+  - name: setup subscription
+    redhat_subscription: 
+      state: present
+      username: INSERTUSER
+      password: INSERTPASSWORD
+      auto_attach: true
