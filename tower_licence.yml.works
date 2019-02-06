@@ -1,0 +1,27 @@
+---
+- name: set tower licence with token auth
+  hosts: localhost
+
+  tasks: 
+  - name: get token 
+    uri: 
+#      url: "{{ tower_rest_url }}"
+      url: https://INSERTDOMAIN/api/v2/config/
+      user: admin
+      password: admin
+      method: POST
+      body_format: json
+      force_basic_auth: yes
+      body: '{ "eula_accepted" : "true", "company_name": "Red Hat", "contact_email": "kvegh@redhat.com", "contact_name": "Karoly Vegh", "hostname": "INSERTHOSTNAME", "instance_count": 50, "license_date": 1580913161, "license_key": "INSERTKEY", "license_type": "enterprise", "subscription_name": "Ansible Tower by Red Hat (50 Managed Nodes), RHT Internal", "trial": true }'
+      headers: 
+        Content-Type: "application/json"
+      validate_certs: false
+      return_content: true
+      # status_code: 201
+    register: rest_output
+
+#  - name: get data
+#    debug: var=rest_output
+#    debug: var=rest_output.json.token
+
+

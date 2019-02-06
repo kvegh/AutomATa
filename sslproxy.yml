@@ -1,0 +1,54 @@
+---
+- name: set up SSL Proxy for supercorp
+  hosts: hetzner,gatewayed
+  
+  tasks: 
+  - name: copy configfile for proxyconfig content
+    copy: 
+      src: /home/ansible/projects/ansible-hetzner/stuff/supercorpat.conf
+      dest: /etc/httpd/conf.d/
+    when: ansible_hostname == "prhel"
+
+  - name: set the right IP for ansible-h
+    lineinfile: 
+      path: /etc/httpd/conf.d/supercorpat.conf
+      insertafter: '^# Insert TOWER Proxymapping here'
+      line: "{{ item }}"
+    with_items: 
+      - "ProxyPass / http://{{ hostvars['ansible-h']['ansible_eth0']['ipv4']['address'] }}/"
+      - "ProxyPassReverse / http://{{ hostvars['ansible-h']['ansible_eth0']['ipv4']['address'] }}/"
+    when: ansible_hostname == "prhel"
+
+  - name: set the right IP for satellite-h
+    lineinfile: 
+      path: /etc/httpd/conf.d/supercorpat.conf
+      insertafter: '^# Insert SATELLITE Proxymapping here'
+      line: "{{ item }}"
+    with_items: 
+      - "ProxyPass / http://{{ hostvars['satellite-h']['ansible_eth0']['ipv4']['address'] }}/"
+      - "ProxyPassReverse / http://{{ hostvars['satellite-h']['ansible_eth0']['ipv4']['address'] }}/"
+    when: ansible_hostname == "prhel"
+
+  - name: restart httpd
+    systemd: 
+      name: httpd
+      state: restarted
+    when: ansible_hostname == "prhel"
+
+  - name: Open port 80
+    firewalld: 
+      service: http 
+      permanent: true 
+      state: enabled
+
+  - name: Open port 443
+    firewalld: 
+      service: https 
+      permanent: true 
+      state: enabled
+
+  - name: start the firewalld service
+    systemd:
+      name: firewalld
+      state: restarted
+

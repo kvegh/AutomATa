@@ -1,0 +1,16 @@
+---
+- name: manage libvirt guests 
+  user: ansible 
+  hosts: baremetal
+  vars:
+      host_name: web
+  
+  tasks:
+    - name: stop all project VMs - {{ host_name }}
+      virt:
+          name: "{{ host_name }}"
+          state: destroyed
+
+    - name: drop VM {{ host_name }} VM config with disks
+      command: "virsh undefine {{ host_name }} --remove-all-storage"
+    

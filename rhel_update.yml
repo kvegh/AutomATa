@@ -1,0 +1,13 @@
+---
+- name: update all packages
+  hosts: all
+
+  tasks: 
+  - name: update all
+    yum: 
+      state: latest
+      name: '*'
+
+  - name: reboot
+    reboot: 
+

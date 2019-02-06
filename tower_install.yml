@@ -1,0 +1,49 @@
+---
+- name: preparing for and installing Ansible Tower
+  hosts: ansible-h
+
+  tasks: 
+  - name: creating dirs
+    file: 
+      state: directory
+      name: /opt/data/software
+
+  - name: Unarchive a file that needs to be downloaded (added in 2.0)
+    unarchive:
+      src: https://releases.ansible.com/ansible-tower/setup-bundle/ansible-tower-setup-bundle-3.4.1-1.el7.tar.gz
+      dest: /opt/data/software
+      remote_src: yes
+
+  - name: Enable a RHSM repository
+    rhsm_repository:
+      name: rhel-7-server-extras-rpms
+
+  - name: enable the epel repo
+    yum:
+      name: http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      state: present
+
+  - name: build tower config
+    lineinfile: 
+      path: /opt/data/software/ansible-tower-setup-bundle-3.4.1-1.el7/inventory
+      regex: '^admin_password' 
+      line: admin_password='admin'
+
+  - name: build tower config
+    lineinfile: 
+      path: /opt/data/software/ansible-tower-setup-bundle-3.4.1-1.el7/inventory
+      regex: '^pg_password' 
+      line: pg_password='admin'
+
+  - name: build tower config
+    lineinfile: 
+      path: /opt/data/software/ansible-tower-setup-bundle-3.4.1-1.el7/inventory
+      regex: '^rabbitmq_password' 
+      line: rabbitmq_password='admin'
+
+  - name: change to dir, then start install
+    shell: ./setup.sh -e nginx_disable_https=true > setup_tower_prhel.log 2>&1
+    args:
+      chdir: /opt/data/software/ansible-tower-setup-bundle-3.4.1-1.el7/
+      creates: setup_tower_prhel.log
+
