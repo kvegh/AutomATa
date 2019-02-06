@@ -1,0 +1,19 @@
+---
+- name: set up self sign certificates
+  hosts: hetzner
+  vars: 
+    server_hostname: supercorp.at
+
+  tasks: 
+  - name: Ensure directory exists for local self-signed TLS certs.
+    file:
+      path: /etc/httpd/mycerts
+      state: directory
+
+  - name: Generate an OpenSSL private key.
+    shell: openssl genrsa -out /etc/httpd/mycerts/supercorp.at-privkey.pem 2048
+
+  - name: Generate an OpenSSL server cert.
+    shell: openssl req -new -x509 -key /etc/httpd/mycerts/supercorp.at-privkey.pem -out /etc/httpd/mycerts/supercorp.at-server-cert.pem -days 1095 -subj "/C=AT/ST=Vienna/L=Vienna/O=Red Hat Austria GmbH/OU=SA/CN=supercorp.at/emailAddress=kvegh@redhat.com"
+
+
