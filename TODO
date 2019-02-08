@@ -1,4 +1,11 @@
 
+# TODO for now: 
+
+Fix IP for *-h hosts
+Satellite install
+Tower config (import? create?)
+Update dynamicly generated SSHkey deployment from prhel to ansible-h 
+
 # TODO for later
 
 # use proper virt module commands, like: 
