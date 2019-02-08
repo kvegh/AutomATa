@@ -14,23 +14,13 @@
       command: "virt-clone --original={{ os_type }}-image --name={{ os_type }}-{{ project_name }}{{ item }} --auto-clone"
       with_sequence: count={{ number_of_hosts }}
 
-    - name: copying ssh keys
-      copy:
-        src: /home/ansible/projects/extra_data/AutomATa/ssh_keys
-        dest: /home/ansible
-
     - name: sysprep VM {{ os_type }}-{{ project_name }} items
       command: "virt-sysprep -d {{ os_type }}-{{ project_name }}{{ item }} --hostname {{ os_type }}-{{ project_name }}{{ item }} --operations defaults" 
       with_sequence: count={{ number_of_hosts }}
 
     - name: sysprep VM plant keys {{ os_type }}-{{ project_name }} items
-      command: "virt-sysprep -d {{ os_type }}-{{ project_name }}{{ item }} --ssh-inject ansible:file:/home/ansible/ssh_keys/ansible_automata.pub --ssh-inject ansible:file:/home/ansible/ssh_keys/ansible_prhel.pub --selinux-relabel" 
+      command: "virt-sysprep -d {{ os_type }}-{{ project_name }}{{ item }} --ssh-inject ansible:file:/home/ansible/.ssh/id_rsa.pub --selinux-relabel" 
       with_sequence: count={{ number_of_hosts }}
-    
-    - name: dropping copied keys
-      file:
-        name: /home/ansible/ssh_keys
-        state: absent
     
     - name: set description to {{ os_type }}-{{ project_name }} items
       command: "virsh desc {{ os_type }}-{{ project_name }}{{ item }} --title {{ os_type }}-{{ project_name }}{{ item }}"
