@@ -35,15 +35,16 @@
   - name: set the connection ip4.method to manual
     command: nmcli con modify eth0-static ipv4.method manual
 
-#  - name: setup hosts file entries
-#    lineinfile:
-#      path: /etc/hosts
-#      line: "{{ item }}"
-#    with_items: 
-#      - "192.168.122.120 tower ansible-h"
-#      - "192.168.122.130 satellite satellite-h"
-#      - "192.168.122.140 zabbix zabbix-h"
-#      - "192.168.122.150 f5 f5-h"
+  - name: setup hosts file entries
+    lineinfile:
+      path: /etc/hosts
+      line: "{{ item }}"
+    with_items: 
+      - "192.168.122.120 tower ansible-h"
+      - "192.168.122.130 satellite satellite-h"
+      - "192.168.122.140 zabbix zabbix-h"
+      - "192.168.122.150 f5 f5-h"
+      - "192.168.122.1 hetzner"
 
 #  - name: start delayed reboot
 #    reboot: 
