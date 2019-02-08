@@ -1,8 +1,12 @@
 ---
 - name: preparing for and installing Ansible Tower
+  gather_facts: no
   hosts: ansible-h
 
   tasks: 
+  - name: make sure the host runs
+    wait_for_connection: 
+
   - name: creating dirs
     file: 
       state: directory

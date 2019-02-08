@@ -1,0 +1,15 @@
+<network connections='2'>
+  <name>production</name>
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  <bridge name='virbr1' stp='on' delay='0'/>
+  <ip address='10.10.10.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='10.10.10.2' end='10.10.10.99'/>
+    </dhcp>
+  </ip>
+</network>
+
