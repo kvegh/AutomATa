@@ -20,7 +20,7 @@
 
     - name: transfer/prep SSH public key or keys to be injected into the images. 
       copy: 
-        src: /home/ansible/.ssh/id_rsa.pub
+        src: /opt/data/keys/ssh_pubkey
         dest: /home/ansible/addkey
 
     - name: sysprep VM plant keys {{ os_type }}-{{ project_name }} items
