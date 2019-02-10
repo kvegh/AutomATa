@@ -24,6 +24,6 @@
       known_hosts:
         name: "{{ item.item }}"
         state: present
-        path: /home/ansible/.ssh/known_hosts
+        path: ~/.ssh/known_hosts
         key: "{{ item.stdout }}"
       with_items: "{{ ssh_key_scanned.results }}"
