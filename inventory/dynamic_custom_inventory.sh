@@ -12,7 +12,7 @@ __EOF__
 
 for host in `grep win inv_input` ; do echo ${host} ansible_host=`ssh ansible@gateway "sudo virsh domifaddr $host" | grep 192.168.122 | awk '{print $4}' | cut -d/ -f1` ; done >> inventory/hosts
 echo -e "\n[rhel_vms]" >> inventory/hosts
-grep rhel inv_input >> inventory/hosts
+grep rhel inv_input | grep -v beta >> inventory/hosts
 
 echo -e "\n[network]" >> inventory/hosts
 echo "f5" >> inventory/hosts
