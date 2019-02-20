@@ -12,6 +12,7 @@
       - "192.168.122.130 satellite satellite-h"
       - "192.168.122.140 zabbix zabbix-h"
       - "192.168.122.150 f5 f5-h"
+      - "88.99.250.153 hetzner"
 
   # OMG, just use templates please... will probably not happen. 
   - name: limit dhcp range of hosts in libvirtd 

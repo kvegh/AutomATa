@@ -41,7 +41,7 @@
       line: "{{ item }}"
     with_items: 
       - "192.168.122.120 tower ansible-h"
-      - "192.168.122.130 satellite satellite-h"
+      - "192.168.122.130 satellite satellite-h satellite-h.example.com satellite.example.com"
       - "192.168.122.140 zabbix zabbix-h"
       - "192.168.122.150 f5 f5-h"
       - "192.168.122.1 hetzner"

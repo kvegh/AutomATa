@@ -1,0 +1,13 @@
+---
+- name: set up hetzner subscription
+  hosts: all
+  vars_files: 
+    - vault/cred.yml
+
+  tasks: 
+  - name: setup subscription
+    redhat_subscription: 
+      state: present
+      username: kvegh@redhat.com
+      password: "{{ rhsm_access_password }}"
+      auto_attach: true

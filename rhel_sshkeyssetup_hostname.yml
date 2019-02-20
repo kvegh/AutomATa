@@ -1,9 +1,9 @@
 ---
 - name: manage ssh keys
-  hosts: localhost
-  connection: local
+  hosts: ansible-h
+# connection: local
   vars:
-      host_name: web
+    host_name: hetzner
 
   tasks:
     - name: remove ssh known_hosts entries locally
@@ -23,5 +23,11 @@
       known_hosts:
         name: "{{ host_name }}"
         state: present
-        path: /home/ansible/.ssh/known_hosts
-        key: "{{ ssh_key_scanned.results }}"
+        path: /var/lib/awx/.ssh/known_hosts
+        key: "{{ ssh_key_scanned.stdout }}"
+
+    - name: fix known_host ownership
+      file: 
+        path: /var/lib/awx/.ssh/known_hosts
+        owner: awx
+        group: awx 

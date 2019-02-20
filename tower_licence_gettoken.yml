@@ -1,0 +1,29 @@
+---
+- name: set tower licence with token auth
+  hosts: localhost
+  vars: 
+    tower_rest_url: https://supercorp.at/api/v2/users/1/personal_tokens/
+
+  tasks: 
+  - name: get token 
+    uri: 
+#      url: "{{ tower_rest_url }}"
+      url: https://supercorp.at/api/v2/users/1/personal_tokens/
+      user: admin
+      password: admin
+      method: POST
+      body_format: json
+      force_basic_auth: yes
+      body: '{"description":"Tower CLI", "application":null, "scope":"write"}'
+      headers: 
+        Content-Type: "application/json"
+      validate_certs: false
+      return_content: true
+      status_code: 201
+    register: rest_output
+
+  - name: get data
+    # debug: var=rest_output
+    debug: var=rest_output.json.token
+
+

@@ -24,7 +24,7 @@
         dest: /home/ansible/addkey
 
     - name: sysprep VM plant keys {{ os_type }}-{{ project_name }} items
-      command: "virt-sysprep -d {{ os_type }}-{{ project_name }}{{ item }} --ssh-inject ansible:file:/home/ansible/.ssh/id_rsa.pub --ssh-inject ansible:file:/home/ansible/addkey --selinux-relabel" 
+      command: "virt-sysprep -d {{ os_type }}-{{ project_name }}{{ item }} --ssh-inject ansible:file:/home/ansible/addkey --selinux-relabel" 
       with_sequence: count={{ number_of_hosts }}
     
     - name: set description to {{ os_type }}-{{ project_name }} items
