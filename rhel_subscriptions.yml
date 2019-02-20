@@ -2,12 +2,12 @@
 - name: set up hetzner subscription
   hosts: all
   vars_files: 
-    - vault/cred.yml
+    - /home/ansible/secvar/cred.yml
 
   tasks: 
   - name: setup subscription
     redhat_subscription: 
       state: present
-      username: kvegh@redhat.com
-      password: "{{ rhsm_access_password }}"
+      username: "{{ rhsm_access_account }}"
+      password: "{{ rhsm_access_token }}"
       auto_attach: true
