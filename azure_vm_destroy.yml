@@ -1,0 +1,30 @@
+- name: create Azure VM
+  hosts: localhost
+
+  tasks: 
+  - name: destroy VM
+    azure_rm_virtualmachine:
+      resource_group: "{{ resourcegroup_name }}"
+      name: testvm10
+      state: absent
+
+  - name: destroy subnet
+    azure_rm_subnet:
+      name: firstsubnet
+      virtual_network_name: firstnetwork
+      resource_group: "{{ resourcegroup_name }}"
+      state: absent
+  
+  - name: destroy virtual network
+    azure_rm_virtualnetwork:
+      name: firstnetwork
+      resource_group: "{{ resourcegroup_name }}"
+      state: absent
+ 
+  - name: destroy resource group
+    azure_rm_resourcegroup:
+      name: "{{ resourcegroup_name }}"
+      location: westus
+      tags:
+        testing: testing
+

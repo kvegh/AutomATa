@@ -1,16 +1,49 @@
 - name: create Azure VM
-  hosts: azure
-  connection: local
+  hosts: localhost
+  vars_files: 
+    - /home/ansible/secvar/azure_cred.yml
+
 
   tasks: 
+  - name: create resource groups
+    azure_rm_resourcegroup:
+      name: "{{ resourcegroup_name }}"
+      location: westus
+      tags:
+        testing: testing
+
+  - name: Create a virtual network
+    azure_rm_virtualnetwork:
+      name: firstnetwork
+      resource_group: "{{ resourcegroup_name }}"
+      address_prefixes_cidr:
+          - "10.1.0.0/16"
+          - "172.100.0.0/16"
+      dns_servers:
+          - "127.0.0.1"
+          - "127.0.0.2"
+      tags:
+          testing: testing
+          delete: on-exit
+
+  - name: Create a subnet
+    azure_rm_subnet:
+      name: firstsubnet
+      virtual_network_name: firstnetwork
+      resource_group: "{{ resourcegroup_name }}"
+      address_prefix_cidr: "10.1.0.0/24"
+      state: present
+  
   - name: first VM
     azure_rm_virtualmachine:
-      resource_group: Testing
-      name: testvm10
+      resource_group: "{{ resourcegroup_name }}"
+      name: "{{ vm_hostname }}"
       vm_size: Standard_D1
       admin_username: ansible
       ssh_password_enabled: false
-      ssh_public_keys: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCfFN7Q8+rgg3+XTjKAHTXIn6JpblplZTxpvhoSOm1eMDOFpz01fIWMLfMBbOMVks378bb15CJBCyytE9Awvfz1JNI1HFwn2L9CsdVSuhEE25lQv3DjPFvO2Jv8YCR6lgJJqnb/hntqylaqAJC3BY2nYaG433weaJQC6vj/0A5Tc6QzVXzlh3uxBnb3tCNFO5xlW8RY21dg0nPD2byC94VXMfPYSiGsBtkb2851fXRf7v4/5GEXRtvpFe7YjcaDB8xvskQ7APzrbZFbCLxtQXDQ6rwwtwCv06mawRRC81KMMaUwYBPPsQrxoGUAN3Z60AGcaR4iN1/8JGWvZ1fHwVFt ansible@automata
+      ssh_public_keys: 
+      - path: /home/ansible/.ssh/authorized_keys
+        key_data: "{{ automata_sshkey }}"
       image:
         offer: CentOS
         publisher: OpenLogic
