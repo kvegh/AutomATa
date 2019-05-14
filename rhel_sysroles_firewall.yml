@@ -1,0 +1,8 @@
+---
+- hosts: rhel_vms
+  vars:
+    firewall:
+      service: 'http'
+      state: 'enabled'
+  roles:
+    - linux-system-roles.firewall
