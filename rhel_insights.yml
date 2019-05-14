@@ -1,0 +1,8 @@
+---
+- name: 
+  hosts: all
+
+  roles:
+  - role: RedHatInsights.insights-client
+    insights_display_name: "{{ inventory_hostname }}"
+    when: ansible_os_family == 'RedHat'
