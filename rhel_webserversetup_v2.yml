@@ -1,0 +1,21 @@
+---
+- name: webserver setup
+  user: ansible 
+  hosts: all
+
+  tasks:
+    - name: install webserver pkg
+      yum:
+        name: httpd
+        state: present
+
+    - name: enable webserver
+      systemd:
+        name: httpd
+        enabled: yes
+
+    - name: start webserver
+      systemd:
+        name: httpd
+        state: started
+
