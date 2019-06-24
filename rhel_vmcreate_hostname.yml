@@ -4,15 +4,18 @@
   hosts: baremetal
   vars:
       host_name: web
+      number_of_hosts: 2
 
   tasks:
 # not going to do xml_lookup just for a template, thank you. 
 # going with 'command" module and virt-clone
     - name: create VM {{ host_name }} items by cloning image
-      command: "virt-clone --original=rhel-image --name={{ host_name }} --auto-clone"
+      command: "virt-clone --original=rhel-image --name={{ host_name }}{{ item }} --auto-clone"
+      with_sequence: count={{ number_of_hosts }}
 
     - name: sysprep VM {{ host_name }} 
-      command: "virt-sysprep -d {{ host_name }} --hostname {{ host_name }} --operations defaults" 
+      command: "virt-sysprep -d {{ host_name }}{{ item }} --hostname {{ host_name }}{{ item }} --operations defaults" 
+      with_sequence: count={{ number_of_hosts }}
 
     - name: transfer/prep SSH public key or keys to be injected into the images. 
       copy: 
@@ -21,15 +24,18 @@
 
 
     - name: sysprep VM plant keys {{ host_name }} items
-      command: "virt-sysprep -d {{ host_name }} --ssh-inject ansible:file:/home/ansible/addkey --selinux-relabel" 
+      command: "virt-sysprep -d {{ host_name }}{{ item }} --ssh-inject ansible:file:/home/ansible/addkey --selinux-relabel" 
+      with_sequence: count={{ number_of_hosts }}
     
     - name: set description to {{ host_name }} items
-      command: "virsh desc {{ host_name }} --title {{ host_name }}"
+      command: "virsh desc {{ host_name }}{{ item }} --title {{ host_name }}{{ item }}"
+      with_sequence: count={{ number_of_hosts }}
     
     - name: start guest VM "{{ host_name }}"
       virt:
-          name: "{{ host_name }}"
+          name: "{{ host_name }}{{ item }}"
           state: running
+      with_sequence: count={{ number_of_hosts }}
 
     - name: allow DHCP/DNS to register
       pause:
