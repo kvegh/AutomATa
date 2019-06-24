@@ -16,11 +16,12 @@
 
     - name: transfer/prep SSH public key or keys to be injected into the images. 
       copy: 
-        src: /home/ansible/.ssh/id_rsa.pub
+        src: /opt/data/keys/ssh_pubkey
         dest: /home/ansible/addkey
 
+
     - name: sysprep VM plant keys {{ host_name }} items
-      command: "virt-sysprep -d {{ host_name }} --ssh-inject ansible:file:/home/ansible/.ssh/id_rsa.pub --ssh-inject ansible:file:/home/ansible/addkey --selinux-relabel" 
+      command: "virt-sysprep -d {{ host_name }} --ssh-inject ansible:file:/home/ansible/addkey --selinux-relabel" 
     
     - name: set description to {{ host_name }} items
       command: "virsh desc {{ host_name }} --title {{ host_name }}"
