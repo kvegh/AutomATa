@@ -31,6 +31,9 @@ echo -e "openshift" >> inventory_hetzner/hosts
 echo -e "\n[network]" >> inventory_hetzner/hosts
 echo "f5-h" >> inventory_hetzner/hosts
 
+echo -e "\n[TJtest]"  >> inventory_hetzner/hosts
+grep ^tj inv_input >> inventory_hetzner/hosts
+
 if [ "$1" == "--list" ] ; then
 
 python inventory2json.py inventory_hetzner/hosts
