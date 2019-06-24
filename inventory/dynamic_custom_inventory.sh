@@ -14,6 +14,9 @@ for host in `grep win inv_input` ; do echo ${host} ansible_host=`ssh ansible@gat
 echo -e "\n[rhel_vms]" >> inventory/hosts
 grep rhel inv_input | grep -v beta >> inventory/hosts
 
+echo -e "\n[TJtest]"  >> inventory/hosts
+grep ^tj inv_input >> inventory/hosts
+
 echo -e "\n[network]" >> inventory/hosts
 echo "f5" >> inventory/hosts
 
