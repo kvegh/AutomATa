@@ -1,0 +1,28 @@
+---
+- name: manage ssh keys
+  hosts: localhost
+  connection: local
+  vars:
+      host_name: tjocp
+      number_of_hosts: 3
+
+  tasks:
+    - name: remove ssh known_hosts entries locally
+      known_hosts:
+        name: "{{ host_name }}{{ item }}"
+        state: absent 
+      with_sequence: count={{ number_of_hosts }}
+
+    - name: scan for keys
+      # shell: ssh-keyscan -t ecdsa  {{ item }},$(dig +short {{ item }})
+      shell: ssh-keyscan -t ecdsa {{ item }}
+      with_items: "{{ groups['TJtest'] }}"
+      register: ssh_key_scanned
+
+    - name: add ssh known_hosts entries locally
+      known_hosts:
+        name: "{{ item.item }}"
+        state: present
+        path: ~/.ssh/known_hosts
+        key: "{{ item.stdout }}"
+      with_items: "{{ ssh_key_scanned.results }}"
