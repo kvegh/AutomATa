@@ -1,0 +1,11 @@
+---
+- name: Create VMs as per requested parameters
+  hosts: localhost
+  connection: local
+
+  tasks: 
+  - name: clone VMs
+    debug: 
+      msg: "VMs are cloned and configured" 
+
+
