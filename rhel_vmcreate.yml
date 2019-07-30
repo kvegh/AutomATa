@@ -8,10 +8,8 @@
       os_type: rhel
 
   tasks:
-# not going to do xml_lookup just for a template, thank you. 
-# going with 'command" module and virt-clone
     - name: create VM {{ os_type }}-{{ project_name }} items by cloning image
-      command: "virt-clone --original={{ os_type }}-image --name={{ os_type }}-{{ project_name }}{{ item }} --auto-clone"
+      command: "virt-clone --original=rhel7.6-img --name={{ os_type }}-{{ project_name }}{{ item }} --auto-clone"
       with_sequence: count={{ number_of_hosts }}
 
     - name: sysprep VM {{ os_type }}-{{ project_name }} items

@@ -1,0 +1,12 @@
+[baremetal]
+gateway
+hetzner
+
+[win_vms]
+
+[rhel_vms]
+rhel-nyugagy2
+rhel-nyugagy1
+
+[network]
+f5

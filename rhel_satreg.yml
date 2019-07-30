@@ -43,7 +43,7 @@
 
     - name: enable Satellite Host Tools repo 
       rhsm_repository:
-        name: rhel-7-server-satellite-tools-6.4-rpms
+        name: rhel-7-server-satellite-tools-6.5-rpms
         state: enabled
 
     - name: install katello-agent and katello-host-tools
