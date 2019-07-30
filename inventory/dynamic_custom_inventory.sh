@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir ~/.ssh 
+chmod 700 ~/.ssh
 ssh-keyscan gateway > ~/.ssh/known_hosts
 ssh -i /opt/data/skeys/`whoami`/cred1 ansible@gateway "sudo virsh list --name --all" | grep -v ansible | grep -v win2k16r2 | grep -v image | grep -v ^$ > inv_input
 
