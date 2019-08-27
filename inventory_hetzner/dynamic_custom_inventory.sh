@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ssh ansible@hetzner "sudo virsh list --name --all" | grep -v ansible | grep -v image |  grep -v ^$ > inv_input
+ssh ansible@hetzner "sudo virsh list --name --all" | grep -v ansible | grep -v image | grep -v img | grep -v ^$ > inv_input
 
 cat <<__EOF__ > inventory_hetzner/hosts
 [baremetal]
