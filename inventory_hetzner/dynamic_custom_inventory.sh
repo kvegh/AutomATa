@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ssh ansible@hetzner "sudo virsh list --name --all" | grep -v ansible | grep -v image | grep -v img | grep -v ^$ > inv_input
+ssh ansible@hetzner "sudo virsh list --name --all" | grep -v ansible | grep -v image | grep -v img | grep -v rhel8 | grep -v ^$ > inv_input
 
 cat <<__EOF__ > inventory_hetzner/hosts
 [baremetal]
@@ -11,7 +11,7 @@ __EOF__
 
 for host in `grep win inv_input` ; do echo ${host} ansible_host=`ssh ansible@hetzner "sudo virsh domifaddr $host" | grep 192.168.122 | awk '{print $4}' | cut -d/ -f1` ; done >> inventory_hetzner/hosts
 echo -e "\n[rhel_vms]" >> inventory_hetzner/hosts
-grep rhel inv_input >> inventory_hetzner/hosts
+grep rhel inv_input | grep -v instest  >> inventory_hetzner/hosts
 
 # Gatewayed VMs on hetzner once again: 
 
@@ -33,6 +33,9 @@ echo "f5-h" >> inventory_hetzner/hosts
 
 echo -e "\n[TJtest]"  >> inventory_hetzner/hosts
 grep ^tj inv_input >> inventory_hetzner/hosts
+
+echo -e "\n[insight]" >> inventory_hetzner/hosts
+grep instest inv_input >> inventory_hetzner/hosts
 
 if [ "$1" == "--list" ] ; then
 
