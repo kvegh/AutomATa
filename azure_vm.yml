@@ -1,7 +1,7 @@
 - name: create Azure VM
   hosts: localhost
-  vars_files: 
-    - /home/ansible/secvar/azure_cred.yml
+#  vars_files: 
+#    - /home/ansible/secvar/azure_cred.yml
 
 
   tasks: 
