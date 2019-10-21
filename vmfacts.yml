@@ -5,7 +5,7 @@
   vars: 
     - vcenter_hostname: vcenter.home.lab
     - vcenter_username: administrator@vSphere.local
-    - vcenter_password: insertpasswordhere
+    - vcenter_password: TotalSecret!1
 
   tasks: 
   - name: Gather all registered virtual machines
