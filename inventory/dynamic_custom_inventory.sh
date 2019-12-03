@@ -17,7 +17,12 @@ hetzner
 [win_vms]
 __EOF__
 
-for host in `grep win inv_input` ; do echo ${host} ansible_host=`ssh ansible@gateway "sudo virsh domifaddr $host" | grep 192.168.122 | awk '{print $4}' | cut -d/ -f1` ; done >> inventory/hosts
+if [ "`whoami`" == "awx" ] 
+then 
+	for host in `grep win inv_input` ; do echo ${host} ansible_host=`ssh -i /opt/data/skeys/$(whoami)/cred1 ansible@gateway "sudo virsh domifaddr $host" | grep 192.168.122 | awk '{print $4}' | cut -d/ -f1` ; done >> inventory/hosts
+else
+  for host in `grep win inv_input` ; do echo ${host} ansible_host=`ssh ansible@gateway "sudo virsh domifaddr $host" | grep 192.168.122 | awk '{print $4}' | cut -d/ -f1` ; done >> inventory/hosts
+fi
 echo -e "\n[rhel_vms]" >> inventory/hosts
 grep rhel\- inv_input | grep -v beta >> inventory/hosts
 
