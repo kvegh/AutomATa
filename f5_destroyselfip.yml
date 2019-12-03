@@ -6,7 +6,7 @@
   tasks:
    - name: Create a SelfIP
      bigip_selfip:
-         address: 10.0.0.10
+         address: 10.0.122.10
          netmask: 255.255.255.0
          vlan: web-vlan1
          name: web-selfip1
