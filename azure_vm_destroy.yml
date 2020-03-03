@@ -5,8 +5,10 @@
   - name: destroy VM
     azure_rm_virtualmachine:
       resource_group: "{{ resourcegroup_name }}"
-      name: testvm10
+      name: "{{ vm_hostname }}-{{ item }}"
       state: absent
+    loop: "{{ range(0, 5)|list }}" 
+
 
   - name: destroy subnet
     azure_rm_subnet:
