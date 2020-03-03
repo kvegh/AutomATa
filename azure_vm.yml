@@ -37,7 +37,7 @@
   - name: first VM
     azure_rm_virtualmachine:
       resource_group: "{{ resourcegroup_name }}"
-      name: "{{ vm_hostname }}"
+      name: "{{ vm_hostname }}-{{ item }}"
       vm_size: Standard_D1
       admin_username: ansible
       ssh_password_enabled: false
@@ -49,3 +49,6 @@
         publisher: OpenLogic
         sku: '7.1'
         version: latest
+    loop: "{{ range(0, 5)|list }}" 
+    
+    
