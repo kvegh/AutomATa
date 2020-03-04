@@ -49,7 +49,7 @@
         publisher: OpenLogic
         sku: '7.1'
         version: latest
-    loop: "{{ range(0, 10)|list }}" 
+    loop: "{{ range(0, 100)|list }}" 
     async: 3600
     poll: 0 
     
