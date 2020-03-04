@@ -49,6 +49,6 @@
         publisher: OpenLogic
         sku: '7.1'
         version: latest
-    loop: "{{ range(0, 5)|list }}" 
+    loop: "{{ range(0, 10)|list }}" 
     
     
