@@ -34,7 +34,7 @@
       address_prefix_cidr: "10.1.0.0/24"
       state: present
   
-  - name: first VM
+  - name: setup first jumphost
     azure_rm_virtualmachine:
       resource_group: "{{ resourcegroup_name }}"
       name: "{{ vm_hostname }}-{{ item }}"
@@ -49,7 +49,26 @@
         publisher: OpenLogic
         sku: '7.1'
         version: latest
-    loop: "{{ range(0, 15)|list }}" 
-  #  async: 3600
-  #  poll: 0 
+    async: 3600
+    poll: 0 
+    
+  - name: setup real clients
+    azure_rm_virtualmachine:
+      resource_group: "{{ resourcegroup_name }}"
+      name: "{{ vm_hostname }}-{{ item }}"
+      vm_size: Standard_D1
+      admin_username: ansible
+      ssh_password_enabled: false
+      ssh_public_keys: 
+      - path: /home/ansible/.ssh/authorized_keys
+        key_data: "{{ automata_sshkey }}"
+      image:
+        offer: CentOS
+        publisher: OpenLogic
+        sku: '7.1'
+        version: latest
+      public_ip_allocation_method: disabled
+    loop: "{{ range(0, 3)|list }}" 
+    async: 3600
+    poll: 0 
     
