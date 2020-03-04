@@ -69,6 +69,6 @@
         version: latest
       public_ip_allocation_method: disabled
     loop: "{{ range(0, 3)|list }}" 
-    async: 3600
-    poll: 0 
+    # async: 3600
+    # poll: 0 
     
