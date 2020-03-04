@@ -68,7 +68,7 @@
         sku: '7.1'
         version: latest
       public_ip_allocation_method: Disabled
-    loop: "{{ range(0, 3)|list }}" 
-    # async: 3600
-    # poll: 0 
+    loop: "{{ range(0, 15)|list }}" 
+    async: 3600
+    poll: 0 
     
