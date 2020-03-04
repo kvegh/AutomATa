@@ -37,7 +37,7 @@
   - name: setup first jumphost
     azure_rm_virtualmachine:
       resource_group: "{{ resourcegroup_name }}"
-      name: "{{ vm_hostname }}-{{ item }}"
+      name: proxyhost
       vm_size: Standard_D1
       admin_username: ansible
       ssh_password_enabled: false
