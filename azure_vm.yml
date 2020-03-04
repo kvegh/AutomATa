@@ -50,5 +50,6 @@
         sku: '7.1'
         version: latest
     loop: "{{ range(0, 10)|list }}" 
-    
+    async: 3600
+    poll: 30 
     
