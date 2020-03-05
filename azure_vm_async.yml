@@ -49,6 +49,8 @@
         publisher: OpenLogic
         sku: '7.1'
         version: latest
+    async: 1800
+    poll: 30
     
   - name: setup real clients
     azure_rm_virtualmachine:
@@ -67,4 +69,6 @@
         version: latest
       public_ip_allocation_method: Disabled
     loop: "{{ range(0, 15)|list }}" 
+    async: 1800
+    poll: 30
     
