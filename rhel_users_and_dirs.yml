@@ -31,7 +31,6 @@
       - /opt/data/maindir
       - /opt/data/maindir/A
       - /opt/data/maindir/B
-      state: present
       owner: foo
       group: hitchhikers
       mode: '0644'
