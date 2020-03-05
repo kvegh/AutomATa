@@ -6,20 +6,34 @@
 
   tasks: 
   - name: ensure list of users are set up
+    group: 
+      name: 
+      - hitchhikers
+      - betelgeusians
+      - humans
+      - brits
+      state: present
+
+  - name: ensure list of users are set up
     user: 
       name: "{{ item.name }}" 
       generate_ssh_key: yes
       group: "{{ item.group }}"
       groups: "{{ item.groups }}" 
       create_home: yes
+      state: present
     loop: "{{ userlist }}" 
 
   - name: set up required directory structure 
     file: 
       state: directory
-
-
-
-
+      name: 
+      - /opt/data/maindir
+      - /opt/data/maindir/A
+      - /opt/data/maindir/B
+      state: present
+      owner: foo
+      group: hitchhikers
+      mode: '0644'
 
 
