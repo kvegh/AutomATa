@@ -50,7 +50,7 @@
         sku: '7.1'
         version: latest
     async: 1800
-    poll: 30
+    poll: 0
     
   - name: setup real clients
     azure_rm_virtualmachine:
@@ -68,7 +68,7 @@
         sku: '7.1'
         version: latest
       public_ip_allocation_method: Disabled
-    loop: "{{ range(0, 15)|list }}" 
+    loop: "{{ range(0, 50)|list }}" 
     async: 1800
-    poll: 30
+    poll: 0
     
