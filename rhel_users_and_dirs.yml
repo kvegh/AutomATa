@@ -1,0 +1,25 @@
+---
+- name: set up users and dirs 
+  hosts: all
+  vars_files:
+  - extravars/userlist.yml
+
+  tasks: 
+  - name: ensure list of users are set up
+    user: 
+      name: "{{ item.name }}" 
+      generate_ssh_key: yes
+      group: "{{ item.group }}"
+      groups: "{{ item.groups }}" 
+      create_home: yes
+    loop: "{{ userlist }}" 
+
+  - name: set up required directory structure 
+    file: 
+      state: directory
+
+
+
+
+
+

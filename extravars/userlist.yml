@@ -1,0 +1,11 @@
+---
+userlist:
+  - username: ford
+    group: hitchhikers
+    groups: humans,brits
+  - username: arthur
+    group: hitchhikers
+    groups: aliens,betelgeusian
+  - username: zaphod
+    group: hitchhikers
+    groups: presidents,betelgeusian
