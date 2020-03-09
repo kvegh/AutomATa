@@ -1,14 +1,14 @@
 - name: create Azure VM
   hosts: localhost
-#  vars_files: 
+  vars_files: 
 #    - /home/ansible/secvar/azure_cred.yml
-
+   - /home/ansible/secvar/ssh_keys.yml
 
   tasks: 
   - name: create resource groups
     azure_rm_resourcegroup:
       name: "{{ resourcegroup_name }}"
-      location: westus
+      location: westeurope
       tags:
         testing: testing
 
@@ -38,33 +38,35 @@
     azure_rm_virtualmachine:
       resource_group: "{{ resourcegroup_name }}"
       name: proxyhost
-      vm_size: Standard_D1
+      vm_size: Standard_A2
       admin_username: ansible
       ssh_password_enabled: false
       ssh_public_keys: 
       - path: /home/ansible/.ssh/authorized_keys
-        key_data: "{{ automata_sshkey }}"
+      #  key_data: "{{ automata_sshkey }}"
+        key_data: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCkjpTygCSxav9sgNbe6zXNSPt7nvqfI+496emfWA+dkNQwxxN54VZdEwe/koEyJB3P4xt+DnFslNXmzWQSAUseyjGOsfSr5KrvOkJqnGIxHw2bU6hh8ml6NAHWTHt05FGeVnCAkKAST6vJufk+r8qo0hTZFMNRetVfz9flvRwCkVYvGgbw57MaMr1LBtU040/TKPc4h0gk+Hb3ljKw4MdiY/dp3GFNiNzHct4ronZHs2383H25VqGlNPQfEaaCgf1DfaEvTvqlUGCUe4XSl9cpp8HpZlMpI9cssU+XOSbGbB4hKutmDKqUWHenXxYwtjOsf99ZFDilDZP/zzlN68pl ansible@automata"
       image:
-        offer: CentOS
-        publisher: OpenLogic
-        sku: '7.1'
+        publisher: RedHat
+        offer: RHEL
+        sku: 8.1
         version: latest
     
   - name: setup real clients
     azure_rm_virtualmachine:
       resource_group: "{{ resourcegroup_name }}"
       name: "{{ vm_hostname }}-{{ item }}"
-      vm_size: Standard_D1
+      vm_size: Standard_A2
       admin_username: ansible
       ssh_password_enabled: false
       ssh_public_keys: 
       - path: /home/ansible/.ssh/authorized_keys
         key_data: "{{ automata_sshkey }}"
       image:
-        offer: CentOS
-        publisher: OpenLogic
-        sku: '7.1'
-        version: latest
+        publisher: RedHat
+        offer: RHEL
+        sku: 8.1
+        version: 8.1.2020020415
       public_ip_allocation_method: Disabled
-    loop: "{{ range(0, 15)|list }}" 
-    
+    loop: "{{ range(0, 1)|list }}" 
+   
+ 

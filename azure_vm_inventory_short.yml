@@ -1,0 +1,50 @@
+# The following host variables are always available:
+# public_ipv4_addresses: all public IP addresses, with the primary IP config from the primary NIC first
+# public_dns_hostnames: all public DNS hostnames, with the primary IP config from the primary NIC first
+# private_ipv4_addresses: all private IP addressses, with the primary IP config from the primary NIC first
+# id: the VM's Azure resource ID, eg /subscriptions/00000000-0000-0000-1111-1111aaaabb/resourceGroups/my_rg/providers/Microsoft.Compute/virtualMachines/my_vm
+# location: the VM's Azure location, eg 'westus', 'eastus'
+# name: the VM's resource name, eg 'myvm'
+# os_profile: The VM OS properties, a dictionary, only system is currently available, eg 'os_profile.system not in ['linux']'
+# powerstate: the VM's current power state, eg: 'running', 'stopped', 'deallocated'
+# provisioning_state: the VM's current provisioning state, eg: 'succeeded'
+# tags: dictionary of the VM's defined tag values
+# resource_type: the VM's resource type, eg: 'Microsoft.Compute/virtualMachine', 'Microsoft.Compute/virtualMachineScaleSets/virtualMachines'
+# vmid: the VM's internal SMBIOS ID, eg: '36bca69d-c365-4584-8c06-a62f4a1dc5d2'
+# vmss: if the VM is a member of a scaleset (vmss), a dictionary including the id and name of the parent scaleset
+
+
+# sample 'myazuresub.azure_rm.yaml'
+
+# required for all azure_rm inventory plugin configs
+plugin: azure_rm
+
+# forces this plugin to use a CLI auth session instead of the automatic auth source selection (eg, prevents the
+# presence of 'ANSIBLE_AZURE_RM_X' environment variables from overriding CLI auth)
+auth_source: cli
+
+# fetches VMs from an explicit list of resource groups instead of default all (- '*')
+include_vm_resource_groups:
+# - myrg1
+- automata
+
+# fetches VMs from VMSSs in all resource groups (defaults to no VMSS fetch)
+include_vmss_resource_groups:
+- '*'
+
+# places a host in the named group if the associated condition evaluates to true
+conditional_groups:
+  # since this will be true for every host, every host sourced from this inventory plugin config will be in the
+  # group 'all_the_hosts'
+  all_the_hosts: true
+  # if the VM's "name" variable contains "dbserver", it will be placed in the 'db_hosts' group
+  # db_hosts: "'dbserver' in name"
+
+# places hosts in dynamically-created groups based on a variable value.
+keyed_groups:
+# places each host in a group named 'tag_(tag name)_(tag value)' for each tag on a VM.
+- prefix: tag
+  key: tags
+# places each host in a group named 'azure_loc_(location name)', depending on the VM's location
+- prefix: azure_loc
+  key: location

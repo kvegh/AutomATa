@@ -1,0 +1,17 @@
+---
+- name: getting all azure VM facts
+  hosts: localhost
+
+  tasks:
+  - name: running the facts module
+    azure_rm_virtualmachineimage_info: 
+      location: westeurope
+      publisher: RedHat
+      offer: RHEL
+      sku: 8.1
+      version: 8.1.2020020415
+    register: vm_results
+
+  - name: return data
+    debug: 
+      var: vm_results
