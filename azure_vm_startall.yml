@@ -4,7 +4,7 @@
   connection: local
 
   tasks: 
-  - name: calling shutdown
+  - name: calling startup
     azure_rm_virtualmachine: 
       name: "{{ inventory_hostname }}"
       resource_group: automata
