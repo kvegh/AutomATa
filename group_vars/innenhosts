@@ -1,1 +1,1 @@
-ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q ansible@13.95.91.246"'
+ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -q ansible@13.95.10.4"'
