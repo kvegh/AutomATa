@@ -41,11 +41,15 @@ conditional_groups:
   # db_hosts: "'dbserver' in name"
   innenhosts: "'innenhost' in name"
 
-# places hosts in dynamically-created groups based on a variable value.
-keyed_groups:
-# places each host in a group named 'tag_(tag name)_(tag value)' for each tag on a VM.
-- prefix: tag
-  key: tags
-# places each host in a group named 'azure_loc_(location name)', depending on the VM's location
-- prefix: azure_loc
-  key: location
+# # places hosts in dynamically-created groups based on a variable value.
+# keyed_groups:
+# # places each host in a group named 'tag_(tag name)_(tag value)' for each tag on a VM.
+# - prefix: tag
+#   key: tags
+# # places each host in a group named 'azure_loc_(location name)', depending on the VM's location
+# - prefix: azure_loc
+#   key: location
+
+plain_host_names: yes
+# default_host_filters: ["powerstate != \"running\"", "provisioning_state != \"succeeded\""]
+default_host_filters: ["provisioning_state != \"succeeded\""]

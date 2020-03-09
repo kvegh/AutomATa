@@ -1,0 +1,12 @@
+---
+- name: shut down all azure hosts
+  hosts: all
+  connection: local
+
+  tasks: 
+  - name: calling shutdown
+    azure_rm_virtualmachine: 
+      name: "{{ inventory_hostname }}"
+      resource_group: automata
+      started: no
+
