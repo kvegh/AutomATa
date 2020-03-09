@@ -43,8 +43,7 @@
       ssh_password_enabled: false
       ssh_public_keys: 
       - path: /home/ansible/.ssh/authorized_keys
-      #  key_data: "{{ automata_sshkey }}"
-        key_data: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCkjpTygCSxav9sgNbe6zXNSPt7nvqfI+496emfWA+dkNQwxxN54VZdEwe/koEyJB3P4xt+DnFslNXmzWQSAUseyjGOsfSr5KrvOkJqnGIxHw2bU6hh8ml6NAHWTHt05FGeVnCAkKAST6vJufk+r8qo0hTZFMNRetVfz9flvRwCkVYvGgbw57MaMr1LBtU040/TKPc4h0gk+Hb3ljKw4MdiY/dp3GFNiNzHct4ronZHs2383H25VqGlNPQfEaaCgf1DfaEvTvqlUGCUe4XSl9cpp8HpZlMpI9cssU+XOSbGbB4hKutmDKqUWHenXxYwtjOsf99ZFDilDZP/zzlN68pl ansible@automata"
+        key_data: "{{ automata_sshkey }}"
       image:
         publisher: RedHat
         offer: RHEL
