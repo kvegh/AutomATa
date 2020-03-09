@@ -39,6 +39,7 @@ conditional_groups:
   all_the_hosts: true
   # if the VM's "name" variable contains "dbserver", it will be placed in the 'db_hosts' group
   # db_hosts: "'dbserver' in name"
+  innenhosts: "'innenhost' in name"
 
 # places hosts in dynamically-created groups based on a variable value.
 keyed_groups:
