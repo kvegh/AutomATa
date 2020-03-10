@@ -8,8 +8,8 @@
       location: westeurope
       publisher: RedHat
       offer: RHEL
-      sku: 8.1
-      version: 8.1.2020020415
+      sku: "{{ release }}"
+      # version: 8.0.2019050711
     register: vm_results
 
   - name: return data
