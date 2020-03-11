@@ -37,7 +37,7 @@
   - name: setup first jumphost
     azure_rm_virtualmachine:
       resource_group: "{{ resourcegroup_name }}"
-      name: proxyhost
+      name: jumphost
       vm_size: Standard_A2
       admin_username: ansible
       ssh_password_enabled: false
@@ -50,22 +50,3 @@
         sku: 8.1
         version: latest
     
-  - name: setup real clients
-    azure_rm_virtualmachine:
-      resource_group: "{{ resourcegroup_name }}"
-      name: "{{ vm_hostname }}-{{ item }}"
-      vm_size: Standard_A2
-      admin_username: ansible
-      ssh_password_enabled: false
-      ssh_public_keys: 
-      - path: /home/ansible/.ssh/authorized_keys
-        key_data: "{{ automata_sshkey }}"
-      image:
-        publisher: RedHat
-        offer: RHEL
-        sku: 8.1
-        version: 8.1.2020020415
-      public_ip_allocation_method: Disabled
-    loop: "{{ range(0, 1)|list }}" 
-   
- 
