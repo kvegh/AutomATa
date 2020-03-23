@@ -7,7 +7,8 @@ then
   ssh-keyscan gateway > ~/.ssh/known_hosts
   ssh-keyscan 192.168.122.1 >> ~/.ssh/known_hosts
 fi
-  ssh -i /opt/data/skeys/`whoami`/cred1 ansible@gateway "sudo virsh list --name --all" | grep -v ansible | grep -v win2k16r2 | grep -v image | grep -v img | grep -v ^$ > inv_input
+#   ssh -i /opt/data/skeys/`whoami`/cred1 ansible@gateway "sudo virsh list --name --all" | grep -v ansible | grep -v win2k16r2 | grep -v image | grep -v img | grep -v ^$ > inv_input
+  ssh ansible@gateway "sudo virsh list --name --all" | grep -v ansible | grep -v win2k16r2 | grep -v image | grep -v img | grep -v ^$ > inv_input
 
 cat <<__EOF__ > inventory/hosts
 [baremetal]
