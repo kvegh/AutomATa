@@ -4,8 +4,8 @@ if [ "`whoami`" == "awx" ]
 then 
   mkdir ~/.ssh 
   chmod 700 ~/.ssh
-  ssh-keyscan gateway > ~/.ssh/known_hosts
-  ssh-keyscan 192.168.122.1 >> ~/.ssh/known_hosts
+  ssh-keyscan gateway > ~/.ssh/known_hosts 2>/dev/null
+  ssh-keyscan 192.168.122.1 >> ~/.ssh/known_hosts 2>/dev/null
 fi
   ssh -i /opt/data/skeys/`whoami`/cred1 ansible@gateway "sudo virsh list --name --all" | grep -v ansible | grep -v win2k16r2 | grep -v image | grep -v img | grep -v ^$ > inv_input
 
@@ -34,7 +34,7 @@ grep ceph inv_input >> inventory/hosts
 
 if [ "$1" == "--list" ] ; then
 
-python3 inventory2json.py inventory/hosts
+python inventory2json.py inventory/hosts
 
 elif [ "$1" == "--host" ]; then
   echo '{"_meta": {"hostvars": {}}}'
