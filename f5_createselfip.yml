@@ -10,9 +10,10 @@
          netmask: 255.255.255.0
          vlan: web-vlan1
          name: web-selfip1
-         password: admin
-         server: f5
-         user: admin
-         validate_certs: no
+         provider: 
+           password: admin
+           server: f5
+           user: admin
+           validate_certs: no
          state: present
      delegate_to: localhost
