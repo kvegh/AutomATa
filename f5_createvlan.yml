@@ -8,9 +8,10 @@
      bigip_vlan:
          untagged_interfaces: 1.1
          name: web-vlan1
-         password: admin
-         server: f5
-         user: admin
-         validate_certs: no
+         provider: 
+           password: admin
+           server: f5
+           user: admin
+           validate_certs: no
          state: present
      delegate_to: localhost
