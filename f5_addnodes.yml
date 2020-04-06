@@ -10,12 +10,13 @@
        description: webserver-1
        host: "{{ ansible_eth1.ipv4.address }}"
        name: "{{ inventory_hostname }}"
-       password: admin
+       provider: 
+         password: admin
+         server: f5
+         user: admin
+         validate_certs: no
        pool: web-pool
        port: 80
-       server: f5
-       user: admin
-       validate_certs: no
      when: ansible_os_family == "RedHat"
      delegate_to: localhost
   
@@ -24,11 +25,12 @@
        description: webserver-1
        host: "{{ ansible_ip_addresses[2] }}"
        name: "{{ inventory_hostname }}"
-       password: admin
+       provider: 
+         password: admin
+         server: f5
+         user: admin
+         validate_certs: no
        pool: web-pool
        port: 80
-       server: f5
-       user: admin
-       validate_certs: no
      when: ansible_os_family == "Windows"
      delegate_to: localhost
