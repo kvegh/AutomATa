@@ -8,15 +8,16 @@
     bigip_virtual_server:
       description: foo-vip
       destination: 10.0.122.20
-      password: admin
+      provider: 
+        password: admin
+        server: f5
+        user: admin
+        validate_certs: no
       name: vip-1
       pool: web-pool
       port: 443
-      server: f5
       snat: Automap
-      user: admin
       all_profiles:
            - http
            - clientssl
-      validate_certs: no
     delegate_to: localhost
