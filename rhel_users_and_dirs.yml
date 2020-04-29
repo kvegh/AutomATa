@@ -30,12 +30,13 @@
   - name: set up required directory structure 
     file: 
       state: directory
-      name: 
-      - /opt/data/maindir
-      - /opt/data/maindir/A
-      - /opt/data/maindir/B
+      name: "{{ item }}"
       owner: root
       group: hitchhikers
       mode: '0774'
+    loop: 
+      - /opt/data/maindir
+      - /opt/data/maindir/A
+      - /opt/data/maindir/B
 
 
