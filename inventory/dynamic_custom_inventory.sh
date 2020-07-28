@@ -37,7 +37,7 @@ grep ansible inv_input >> inventory/hosts
 
 if [ "$1" == "--list" ] ; then
 
-python inventory2json.py inventory/hosts
+python3 inventory2json.py inventory/hosts
 
 elif [ "$1" == "--host" ]; then
   echo '{"_meta": {"hostvars": {}}}'
