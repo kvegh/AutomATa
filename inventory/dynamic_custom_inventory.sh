@@ -32,6 +32,8 @@ echo -e "\n[insights_vms]" >> inventory/hosts
 grep instest inv_input >> inventory/hosts
 
 echo -e "\n[infrastructure]" >> inventory/hosts
+grep netapp inv_input >> inventory/hosts
+echo rhnetappcluster >> inventory/hosts
 grep sat inv_input >> inventory/hosts
 grep ansible inv_input >> inventory/hosts
 
