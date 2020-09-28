@@ -68,8 +68,10 @@
     na_ontap_vserver_peer:
       state: present
       peer_vserver: svm01_dr
-      peer_cluster: "rhnetappcluster-2"
-      dest_hostname: "rhnetappcluster-2"
+      # peer_cluster: "rhnetappcluster-2"
+      # dest_hostname: "rhnetappcluster-2"
+      peer_cluster: "{{ netapp_node2_hostname }}"
+      dest_hostname: "{{ netapp_node2_hostname }}"
       vserver: svm01
       applications: ['snapmirror']
       hostname: "rhnetappcluster-1"
