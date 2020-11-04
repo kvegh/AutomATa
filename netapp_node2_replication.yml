@@ -1,0 +1,100 @@
+---
+- name: deploy an NFS share on NetApp
+  hosts: localhost
+  vars_files:
+    - netapp_allvars.yml
+
+  tasks:
+  - name: Create interface
+    na_ontap_interface:
+      state: present
+      # interface_name: rnetappcluster-2-intercluster
+      interface_name: "{{ netapp_node2_hostname }}-intercluster"
+      home_port: e0b
+      # home_node: rhnetappcluster-2-01
+      home_node: "{{ netapp_node2_hostname }}-01"
+      role: intercluster
+      admin_status: up
+      failover_policy: local-only
+      firewall_policy: data
+      is_auto_revert: true
+      address: "{{ netapp_node2_cluster_interface }}"
+      netmask: "{{ netapp_node2_cluster_interface_mask }}"
+      force_subnet_association: false
+      # dns_domain_name: test.com
+      # listen_for_dns_query: no
+      # is_dns_update_enabled: no
+      vserver: "{{ netapp_node2_hostname }}"
+      use_rest: "{{ netapp_config_use_rest }}"
+      https: "{{ netapp_config_https }}"
+      validate_certs: "{{ netapp_config_validate_certs }}"
+      hostname: "{{ netapp_node2_hostname }}"
+      username: "{{ netapp_username }}"
+      password: "{{ netapp_password }}"
+
+  - name: Create cluster peer
+    na_ontap_cluster_peer:
+      state: present
+      # source_intercluster_lifs: 192.168.122.67
+      # dest_intercluster_lifs: 192.168.122.63
+      source_intercluster_lifs: "{{ netapp_node2_cluster_interface }}"
+      dest_intercluster_lifs: "{{ netapp_node1_cluster_interface }}"
+      passphrase: "supersecretpassphrase"
+      dest_hostname: "{{ netapp_node1_hostname }}"
+      # encryption_protocol_proposed: tls_psk
+      use_rest: "{{ netapp_config_use_rest }}"
+      https: "{{ netapp_config_https }}"
+      validate_certs: "{{ netapp_config_validate_certs }}"
+      hostname: "{{ netapp_node2_hostname }}"
+      username: "{{ netapp_username }}"
+      password: "{{ netapp_password }}"
+
+  - name: Create replica target SVM
+    na_ontap_svm:
+      state: present
+      name: svm01_dr
+      subtype: dp_destination
+      # root_volume: svm01_vol01
+      # root_volume_aggregate: aggr01
+      # root_volume_security_style: unix
+      use_rest: "{{ netapp_config_use_rest }}"
+      https: "{{ netapp_config_https }}"
+      validate_certs: "{{ netapp_config_validate_certs }}"
+      hostname: "{{ netapp_node2_hostname }}"
+      username: "{{ netapp_username }}"
+      password: "{{ netapp_password }}"
+
+  - name: Source vserver peer create
+    na_ontap_vserver_peer:
+      state: present
+      peer_vserver: svm01_dr
+      # peer_cluster: "rhnetappcluster-2"
+      # dest_hostname: "rhnetappcluster-2"
+      peer_cluster: "{{ netapp_node2_hostname }}"
+      dest_hostname: "{{ netapp_node2_hostname }}"
+      vserver: svm01
+      applications: ['snapmirror']
+      hostname: "rhnetappcluster-1"
+      use_rest: "{{ netapp_config_use_rest }}"
+      https: "{{ netapp_config_https }}"
+      validate_certs: "{{ netapp_config_validate_certs }}"
+      # attention: here we connect to the first clusternode! 
+      # hostname: "{{ netapp_hostname }}"
+      hostname: "{{ netapp_node1_hostname }}"
+      username: "{{ netapp_username }}"
+      password: "{{ netapp_password }}"
+
+  - name: Create ONTAP/ONTAP vserver SnapMirror
+    na_ontap_snapmirror:
+      state: present
+      source_vserver: svm01
+      destination_vserver: svm01_dr
+      identity_preserve: true
+      schedule: hourly
+      policy: MirrorAllSnapshots
+      use_rest: "{{ netapp_config_use_rest }}"
+      https: "{{ netapp_config_https }}"
+      validate_certs: "{{ netapp_config_validate_certs }}"
+      hostname: "{{ netapp_node2_hostname }}"
+      username: "{{ netapp_username }}"
+      password: "{{ netapp_password }}"

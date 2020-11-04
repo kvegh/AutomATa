@@ -1,0 +1,21 @@
+# common vars: 
+netapp_config_use_rest: Always
+netapp_config_https: yes
+netapp_config_validate_certs: no
+netapp_username: "admin"
+netapp_password: "Ansi-Bell1"
+
+#Netapp node1 vars: 
+netapp_node1_hostname: "rhnetappcluster-1"
+netapp_node1_svm_interface: "192.168.122.62"
+netapp_node1_svm_interface_mask: "255.255.255.0"
+netapp_node1_cluster_interface: "192.168.122.63"
+netapp_node1_cluster_interface_mask: "255.255.255.0"
+
+#Netapp node2 vars: 
+netapp_node2_hostname: "rhnetappcluster-2"
+netapp_node2_svm_interface: "192.168.122.66"
+netapp_node2_svm_interface_mask: "255.255.255.0"
+netapp_node2_cluster_interface: "192.168.122.67"
+netapp_node2_cluster_interface_mask: "255.255.255.0"
+

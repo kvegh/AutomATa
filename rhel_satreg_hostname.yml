@@ -1,7 +1,7 @@
 ---
 - name: satellite preparation
   user: ansible 
-  hosts: rhel_vms
+  hosts: all
   vars:
     sat_version: 6.8
 
@@ -45,11 +45,13 @@
 
     - name: Set RHSM release version
       rhsm_release:
-        release: "7.7"
+        release: "8.1"
 
     - name: enable Satellite Host Tools repo 
       rhsm_repository:
         name: "rhel-7-server-satellite-tools-{{ sat_version }}-rpms"
+        # name: "rhel-8-server-satellite-tools-{{ sat_version }}-rpms"
+        #  name: "satellite-tools-6.8-for-rhel-8-x86_64-rpms"
         state: enabled
 
     - name: install katello-agent and katello-host-tools

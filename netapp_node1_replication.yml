@@ -1,0 +1,35 @@
+---
+- name: deploy an NFS share on NetApp
+  hosts: localhost
+  vars_files:
+    - netapp_allvars.yml
+
+  tasks:
+  - name: Create interface
+    na_ontap_interface:
+      state: present
+      # interface_name: rnetappcluster-1-intercluster
+      interface_name: "{{ netapp_node1_hostname }}-intercluster"
+      home_port: e0b
+      # home_node: rhnetappcluster-1-01
+      home_node: "{{ netapp_node1_hostname }}-01"
+      role: intercluster
+      admin_status: up
+      failover_policy: local-only
+      firewall_policy: data
+      is_auto_revert: true
+      address: "{{ netapp_node1_cluster_interface }}"
+      netmask: "{{ netapp_node1_cluster_interface_mask }}"
+      force_subnet_association: false
+      # dns_domain_name: test.com
+      # listen_for_dns_query: no
+      # is_dns_update_enabled: no
+      # vserver: "rhnetappcluster-1"
+      vserver: "{{ netapp_node1_hostname }}"
+      use_rest: "{{ netapp_config_use_rest }}"
+      https: "{{ netapp_config_https }}"
+      validate_certs: "{{ netapp_config_validate_certs }}"
+      hostname: "{{ netapp_node1_hostname }}"
+      username: "{{ netapp_username }}"
+      password: "{{ netapp_password }}"
+
