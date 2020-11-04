@@ -6,10 +6,11 @@
       project_name: web
       number_of_hosts: 3
       os_type: rhel
+      os_version: 7.6
 
   tasks:
     - name: create VM {{ os_type }}-{{ project_name }} items by cloning image
-      command: "virt-clone --original=rhel7.6-img --name={{ os_type }}-{{ project_name }}{{ item }} --auto-clone"
+      command: "virt-clone --original=rhel{{ os_version }}-img --name={{ os_type }}-{{ project_name }}{{ item }} --auto-clone"
       with_sequence: count={{ number_of_hosts }}
 
     - name: sysprep VM {{ os_type }}-{{ project_name }} items
