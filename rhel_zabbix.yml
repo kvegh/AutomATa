@@ -13,7 +13,7 @@
   tasks:
     - name: Install Zabbix agent
       yum: 
-        name: zabbix30-agent
+        name: zabbix40-agent
         state: latest 
 
     - name: make sure zabbix client service is enabled
