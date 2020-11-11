@@ -28,12 +28,17 @@
           - katello-host-tools
         state: absent
 
-    - name: drop hosts entry from sat
-      foreman:
-        username: admin
-        password: admin
-        server_url: https://satellite.example.com
-        entity: host
-        params:
-          name: "{{ inventory_hostname }}"
-          state: absent
+# foreman module is deprecated, need to use the theforeman collection, but until then command
+#    - name: drop hosts entry from sat
+#      foreman:
+#        username: admin
+#        password: admin
+#        server_url: https://satellite.example.com
+#        entity: host
+#        params:
+#          name: "{{ inventory_hostname }}"
+#          state: absent
+
+    - name: unsubscribe hosts
+      shell: "/usr/bin/subscription-manager unregister ; /usr/bin/subscription-manager clean"
+

@@ -36,21 +36,44 @@
         name: /var/tmp/katello-ca-consumer-latest.noarch.rpm
         state: present
 
-    - name: Register to satellite with activationkey and consume subscriptions 
-      redhat_subscription:
-        state: present
-        activationkey: NewKey_1
-        org_id: SuperCorp
-        auto_attach: true
+    - name: RHEL 7 specific activation, repos 
+      block:
 
-    - name: Set RHSM release version
-      rhsm_release:
-        release: "7.7"
+        - name: Register to satellite with activationkey and consume subscriptions 
+          redhat_subscription:
+            state: present
+            activationkey: Insights_Key_RHEL7
+            org_id: SuperCorp
+            auto_attach: true
 
-    - name: enable Satellite Host Tools repo 
-      rhsm_repository:
-        name: "rhel-7-server-satellite-tools-{{ sat_version }}-rpms"
-        state: enabled
+        - name: on RHEL7 we need to update subscription-manager
+          package:
+            name: subscription-manager
+            state: latest
+
+        - name: enable Satellite Host Tools repo 
+          rhsm_repository:
+            name: "rhel-7-server-satellite-tools-{{ sat_version }}-rpms"
+            state: enabled
+
+      when: ansible_distribution_major_version == "7"
+
+    - name: RHEL 8 specific activation, repos 
+      block:
+
+        - name: Register to satellite with activationkey and consume subscriptions 
+          redhat_subscription:
+            state: present
+            activationkey: Insights_Key_RHEL8
+            org_id: SuperCorp
+            auto_attach: true
+
+        - name: enable Satellite Host Tools repo 
+          rhsm_repository:
+            name: "satellite-tools-{{ sat_version }}-for-rhel-8-x86_64-rpms"
+            state: enabled
+
+      when: ansible_distribution_major_version == "8"
 
     - name: install katello-agent and katello-host-tools
       yum: 

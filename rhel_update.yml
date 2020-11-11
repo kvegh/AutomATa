@@ -9,5 +9,9 @@
       name: '*'
 
   - name: reboot
-    reboot: 
+    reboot:
+
+  - name: set content host facts straight
+    command: subscription-manager facts --update
+
 
