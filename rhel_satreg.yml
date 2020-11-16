@@ -34,6 +34,7 @@
     - name: install RPM with yum
       yum: 
         name: /var/tmp/katello-ca-consumer-latest.noarch.rpm
+        disable_gpg_check: yes
         state: present
 
     - name: RHEL 7 specific activation, repos 
@@ -48,8 +49,11 @@
 
         - name: on RHEL7 we need to update subscription-manager
           package:
-            name: subscription-manager
+            name: "{{ item }}"
             state: latest
+          loop:
+            - subscription-manager
+            - python-six
 
         - name: enable Satellite Host Tools repo 
           rhsm_repository:

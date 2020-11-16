@@ -1,19 +1,20 @@
 ---
 - name: manage libvirt guests 
-  user: ansible 
+  user: root
   hosts: baremetal
   vars:
       project_name: web
       number_of_hosts: 3
       os_type: rhel
+      os_version: 8.0
 
   tasks:
     - name: create VM {{ os_type }}-{{ project_name }} items by cloning image
-      command: "virt-clone --original=rhel8.1-baseimg --name={{ os_type }}-{{ project_name }}{{ item }} --auto-clone"
+      command: "virt-clone --original=rhel{{ os_version }}-img --name={{ os_type }}-{{ project_name }}{{ item }} --auto-clone"
       with_sequence: count={{ number_of_hosts }}
 
     - name: sysprep VM {{ os_type }}-{{ project_name }} items
-      command: "virt-sysprep -d {{ os_type }}-{{ project_name }}{{ item }} --hostname {{ os_type }}-{{ project_name }}{{ item }} --operations defaults" 
+      shell: "export LIBGUESTFS_BACKEND=direct; export LIBGUESTFS_PATH=/home/kvegh/appliance/; virt-sysprep -d {{ os_type }}-{{ project_name }}{{ item }} --hostname {{ os_type }}-{{ project_name }}{{ item }} --operations defaults" 
       with_sequence: count={{ number_of_hosts }}
 
     - name: transfer/prep SSH public key or keys to be injected into the images. 
@@ -22,7 +23,7 @@
         dest: /home/ansible/addkey
 
     - name: sysprep VM plant keys {{ os_type }}-{{ project_name }} items
-      command: "virt-sysprep -d {{ os_type }}-{{ project_name }}{{ item }} --ssh-inject ansible:file:/home/ansible/addkey --selinux-relabel" 
+      shell: "export LIBGUESTFS_BACKEND=direct; export LIBGUESTFS_PATH=/home/kvegh/appliance/; virt-sysprep -d {{ os_type }}-{{ project_name }}{{ item }} --ssh-inject ansible:file:/home/ansible/addkey --selinux-relabel" 
       with_sequence: count={{ number_of_hosts }}
     
     - name: set description to {{ os_type }}-{{ project_name }} items

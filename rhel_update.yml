@@ -3,6 +3,9 @@
   hosts: all
 
   tasks: 
+  - name: after contentview change s-m refresh is necessary
+    command: subscription-manager refresh
+
   - name: update all
     yum: 
       state: latest
