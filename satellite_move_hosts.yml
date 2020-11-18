@@ -1,0 +1,22 @@
+---
+- name: moving hosts to new Sat LCEs with newer RHEL 7/8 CCVs
+  hosts: localhost 
+  vars: 
+    project_name: "changeme"
+
+  tasks: 
+  - name: hosts
+    redhat.satellite.host:
+      username: "ansible"
+      password: "Ansible-SuperSecret-Password"
+      server_url: "https://satellite.example.com"
+      name: "rhel-kvegh-{{ project_name }}-{{ item }}.kveghdemo.at"
+      lifecycle_environment: "Insights Environment New"
+      content_view: "RHEL 7.9 + 8.3 as of 13.11.2020"
+      organization: "SuperCorp"
+      location: "Vienna"
+    loop:
+      - 711
+      - 741
+      - 801
+

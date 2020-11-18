@@ -1,0 +1,12 @@
+---
+- name: refresh insights data on c.r.c
+  hosts: all
+
+  tasks:
+  - name: unregister insights hosts
+    redhat.insights.insights_register: 
+      state: absent
+
+  - name: reregister insights hosts
+    redhat.insights.insights_register: 
+      state: present

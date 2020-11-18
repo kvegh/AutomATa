@@ -9,6 +9,22 @@
         name: httpd
         state: present
 
+    - name: ensure firewalld and its python module is installed
+      yum:
+        name:
+          - firewalld 
+          - python-firewall
+        state: present
+      when: ansible_distribution_major_version == "7"
+
+    - name: ensure firewalld and its python module is installed
+      yum:
+        name:
+          - firewalld 
+          - python3-firewall
+        state: present
+      when: ansible_distribution_major_version == "8"
+
     - name: enable webserver
       systemd:
         name: httpd
