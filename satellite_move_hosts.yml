@@ -1,12 +1,14 @@
 ---
 - name: moving hosts to new Sat LCEs with newer RHEL 7/8 CCVs
-  hosts: localhost 
+  hosts: rhel_vms 
+  become: yes
   vars: 
     project_name: "changeme"
 
   tasks: 
   - name: hosts
-    redhat.satellite.host:
+    local_action: 
+      module: redhat.satellite.host
       username: "ansible"
       password: "Ansible-SuperSecret-Password"
       server_url: "https://satellite.example.com"
@@ -19,4 +21,13 @@
       - 711
       - 741
       - 801
+    run_once: true
 
+  - name: update s-m, force katello pkg update
+    package: 
+      state: latest
+      name: 
+        - subscription-manager 
+        - katello-host-tools 
+        - katello-agent
+ 
