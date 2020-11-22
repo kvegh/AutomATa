@@ -2,13 +2,9 @@
 - name: drop specific hosts from insights registration 
   vars:
     project_name: "changeme"
-  hosts:
-    - "rhel-kvegh-{{ project_name }}-711"
-    - "rhel-kvegh-{{ project_name }}-741"
-    - "rhel-kvegh-{{ project_name }}-801"
+  hosts: rhel_vms 
 
   tasks: 
-    - name: unregister hosts
-      redhat.insights.insights_register: 
-        state: absent
-        # display_name: "{{ inventory_hostname }}.kveghdemo.at" 
+  - name: unregister hosts
+    redhat.insights.insights_register: 
+      state: absent
