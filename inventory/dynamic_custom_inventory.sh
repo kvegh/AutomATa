@@ -38,6 +38,8 @@ echo rhnetappcluster2 >> inventory/hosts
 grep sat inv_input >> inventory/hosts
 grep ansible inv_input >> inventory/hosts
 
+sed -i -e '/^rhel/ s/$/.kveghdemo.at/g' inventory/hosts 
+
 if [ "$1" == "--list" ] ; then
 
 python3 inventory2json.py inventory/hosts
