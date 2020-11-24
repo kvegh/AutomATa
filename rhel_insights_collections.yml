@@ -1,0 +1,19 @@
+---
+- name: collection based insights installation
+  hosts: all
+  collections:
+    - redhat.insights
+
+  tasks:
+    - include_role: 
+        name: redhat.insights.insights_client
+      when: ansible_os_family == 'RedHat'
+
+    - name: install compliance required packages (openscap)
+      package: 
+        state: latest
+        name: 
+          - scap-security-guide
+          - openscap-scanner
+          - openscap
+

@@ -16,3 +16,7 @@
         - openscap-scanner
         - openscap
 
+  - name: run compliance content upload 
+    shell: "insights-client --compliance" 
+      
+
