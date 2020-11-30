@@ -1,0 +1,27 @@
+---
+- name: 
+  hosts: all
+
+  roles:
+  - role: redhatinsights.insights-client
+    # insights_display_name: "{{ inventory_hostname }}"
+    when: ansible_os_family == 'RedHat'
+
+  tasks: 
+  - name: install compliance required packages (openscap)
+    package: 
+      state: latest
+      name: 
+        - scap-security-guide
+        - openscap-scanner
+        - openscap
+
+  - name: run insights compliance
+    import_role:
+      name: redhat.insights.compliance
+      tasks_from: run
+
+#   - name: run compliance content upload 
+#    shell: "insights-client --compliance" 
+      
+
