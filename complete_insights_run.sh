@@ -34,7 +34,7 @@ echo "***** UPDATE $2 second round *****"
 ansible-playbook rhel_update.yml -b -l rhel_vms -i inventory/dynamic_custom_inventory.sh 
 
 echo "***** PLANTING INSIGHTS ISSUES $2 *****" 
-ansible-playbook rhel_insights_issues.yml -b -l rhel_vms -i inventory/dynamic_custom_inventory.sh -e project_name=$2 
+ansible-playbook rhel_insights_issues.yml -b -i inventory/dynamic_custom_inventory.sh -e project_name=$2 
 
 echo "***** INSIGHTS REG $2 *****" 
 ansible-playbook rhel_insights.yml -b -l rhel_vms -i inventory/dynamic_custom_inventory.sh 

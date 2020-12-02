@@ -13,6 +13,7 @@
 - name: planting Insights issues - irqbalance
   hosts: gateway,rhel_vms
   become: yes
+  tags: irq
   vars: 
     project_name: changeme
 
