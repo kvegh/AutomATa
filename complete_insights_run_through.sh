@@ -28,7 +28,7 @@ ansible-playbook -l rhel_vms -i inventory/dynamic_custom_inventory.sh rhel_satre
 # First section 
 
 echo -e "I am patiently waiting. Do you want me to get on with the next step and update the RHEL VMs? \c" 
-read -n 2
+# read -n 2
 
 echo "***** UPDATE $2 *****" 
 ansible-playbook rhel_update.yml -b -l rhel_vms -i inventory/dynamic_custom_inventory.sh 
@@ -37,7 +37,7 @@ ansible-playbook rhel_update.yml -b -l rhel_vms -i inventory/dynamic_custom_inve
 # Second section 
 
 echo -e "I am patiently waiting. Do you want me to get on with the next step and move and update the RHEL VMs again? \c" 
-read -n 2
+# read -n 2
 
 echo "**** MOVE hosts $2 to new LCE" 
 ansible-playbook satellite_move_hosts.yml -e project_name=$2 -i inventory/dynamic_custom_inventory.sh 
@@ -49,7 +49,7 @@ ansible-playbook rhel_update.yml -b -l rhel_vms -i inventory/dynamic_custom_inve
 # Third section 
 
 echo -e "I am patiently waiting. Do you want me to get on with the next step and get those VMs insighted? \c" 
-read -n 2
+# read -n 2
 
 echo "***** PLANTING INSIGHTS ISSUES $2 *****" 
 ansible-playbook rhel_insights_issues.yml -b -i inventory/dynamic_custom_inventory.sh -e project_name=$2 
