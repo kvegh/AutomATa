@@ -2,7 +2,7 @@
 
 if [ "`whoami`" == "awx" ] 
 then 
-  mkdir ~/.ssh 
+  mkdir ~/.ssh 2>/dev/null
   chmod 700 ~/.ssh
   ssh-keyscan gateway > ~/.ssh/known_hosts 2>/dev/null
   ssh-keyscan 192.168.122.1 >> ~/.ssh/known_hosts 2>/dev/null
