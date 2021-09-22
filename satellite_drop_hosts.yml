@@ -18,6 +18,7 @@
       organization: "SuperCorp"
       location: "Vienna"
       state: absent
+      validate_certs: no
     run_once: true
     loop:
       - 711

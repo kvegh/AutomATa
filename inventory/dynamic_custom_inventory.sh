@@ -17,7 +17,11 @@ hetzner
 [win_vms]
 __EOF__
 
+if grep win inv_input >/dev/null 2>&1 
+then 
+  echo ITT 
 	for host in `grep win inv_input` ; do echo ${host} ansible_host=`ssh -i /opt/data/skeys/$(whoami)/cred1 ansible@gateway "sudo virsh domifaddr $host" | grep 192.168.122 | awk '{print $4}' | cut -d/ -f1` ; done >> inventory/hosts
+fi 
 
 echo -e "\n[rhel_vms]" >> inventory/hosts
 grep rhel\- inv_input | grep -v beta | grep -v rhel-ceph | grep -v instest >> inventory/hosts
@@ -42,7 +46,7 @@ sed -i -e '/^rhel/ s/$/.kveghdemo.at/g' inventory/hosts
 
 if [ "$1" == "--list" ] ; then
 
-python2 inventory2json.py inventory/hosts
+python3 inventory2json.py inventory/hosts
 
 elif [ "$1" == "--host" ]; then
   echo '{"_meta": {"hostvars": {}}}'
