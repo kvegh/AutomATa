@@ -1,0 +1,13 @@
+---
+- name: install packages
+  hosts: all 
+  become: yes 
+  vars: 
+    packages: 
+      - vim
+
+  tasks: 
+  - name: package installs 
+    package: 
+      name: vim
+      state: latest
