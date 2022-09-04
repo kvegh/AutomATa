@@ -1,0 +1,34 @@
+---
+- name: rudimentary wrapper arpund virsh instead of a proper libvirt plugin
+  become: yes
+  user: ansible
+  hosts: gateway
+
+  tasks: 
+  - name: run wrapper on gateway 
+    command: /home/ansible/inventory_wrapper.sh 
+
+  - name: fetch output
+    fetch:
+      src: /home/ansible/hosts
+      dest: /tmp/hosts
+
+  - name: converting and importing 
+    shell: "ansible-inventory -i /tmp/hosts --list > /tmp/hosts.json"
+
+- name: copying ini
+  become: yes
+  user: ansible
+  hosts: AAP22
+
+  tasks: 
+  - name: push output
+    copy:
+      src: /tmp/hosts.json
+      dest: /tmp/hosts.json
+
+  - name: run import 
+    shell: 'awx-manage inventory_import --source /tmp/hosts.json --inventory-name "Hetzner Inventory"' 
+     
+
+
