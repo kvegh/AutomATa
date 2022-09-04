@@ -4,13 +4,6 @@
   user: awx
   hosts: AAP22
 
-  tasks: 
-  - name: push output
-    copy:
-      src: /tmp/hosts.json
-      dest: /var/lib/awx/hosts.json
-      owner: awx
-
   - name: run import 
     shell: 'awx-manage inventory_import --source /tmp/hosts.json --inventory-name "Hetzner Inventory"' 
      
