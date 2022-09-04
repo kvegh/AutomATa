@@ -10,7 +10,7 @@
   tasks:
     - name: remove ssh known_hosts entries locally
       known_hosts:
-        name: "{{ os_type }}-{{ project_name }}{{ item }}"
+        name: "{{ os_type }}-{{ project_name }}{{ item }}.kveghdemo.at"
         path: ~/.ssh/known_hosts
         state: absent 
       with_sequence: count={{ number_of_hosts }}
