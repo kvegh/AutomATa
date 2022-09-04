@@ -4,8 +4,9 @@
   user: awx
   hosts: AAP22
 
+  tasks: 
   - name: run import 
-    shell: 'awx-manage inventory_import --source /var/lib/awx/hosts.json --inventory-name "Hetzner Inventory"' 
+    shell: awx-manage inventory_import --source /var/lib/awx/hosts.json --inventory-name "Hetzner Inventory" 
      
 
 
