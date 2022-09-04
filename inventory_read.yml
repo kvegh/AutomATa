@@ -15,6 +15,7 @@
 
   - name: converting and importing 
     shell: "ansible-inventory -i /tmp/hosts --list > /tmp/hosts.json"
+    delegate_to: localhost
 
 - name: copying ini
   become: yes
