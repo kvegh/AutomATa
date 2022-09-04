@@ -6,7 +6,7 @@
 
   tasks: 
   - name: run import 
-    shell: 'awx-manage inventory_import --source /var/lib/awx/hosts.json --inventory-name "Hetzner_Inventory"'
+    shell: 'awx-manage inventory_import --source /var/lib/awx/hosts --inventory-name "Hetzner_Inventory"'
      
 
 

@@ -13,9 +13,9 @@
       src: /home/ansible/hosts
       dest: /tmp/hosts
 
-  - name: converting and importing 
-    shell: "ansible-inventory -i /tmp/hosts --list > /tmp/hosts.json"
-    delegate_to: localhost
+      #  - name: converting and importing 
+      #    shell: "ansible-inventory -i /tmp/hosts --list > /tmp/hosts.json"
+      #    delegate_to: localhost
 
 - name: copying ini
   become: yes
@@ -25,6 +25,6 @@
   tasks: 
   - name: push output
     copy:
-      src: /tmp/hosts.json
-      dest: /var/lib/awx/hosts.json
+      src: /tmp/hosts
+      dest: /var/lib/awx/hosts
       owner: awx
