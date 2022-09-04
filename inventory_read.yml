@@ -26,10 +26,5 @@
   - name: push output
     copy:
       src: /tmp/hosts.json
-      dest: /tmp/hosts.json
-
-  - name: run import 
-    shell: 'awx-manage inventory_import --source /tmp/hosts.json --inventory-name "Hetzner Inventory"' 
-     
-
-
+      dest: /var/lib/awx/hosts.json
+      owner: awx
