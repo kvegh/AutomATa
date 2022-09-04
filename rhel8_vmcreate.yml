@@ -1,6 +1,6 @@
 ---
 - name: manage libvirt guests 
-  user: root
+  user: ansible
   hosts: baremetal
   vars:
       project_name: web
