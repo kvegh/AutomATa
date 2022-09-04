@@ -5,7 +5,7 @@
   hosts: AAP22
 
   - name: run import 
-    shell: 'awx-manage inventory_import --source /tmp/hosts.json --inventory-name "Hetzner Inventory"' 
+    shell: 'awx-manage inventory_import --source /var/lib/awx/hosts.json --inventory-name "Hetzner Inventory"' 
      
 
 
