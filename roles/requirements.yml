@@ -3,6 +3,6 @@ collections:
 # this is just with the colleciton name, as seen in: https://docs.ansible.com/ansible/latest/user_guide/collections_using.html#install-multiple-collections-with-a-requirements-file
 # - my_namespace.my_collection
 - community.libvirt
-- community.general.redhat_subscription
+- community.general
 
 
