@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# set -x 
 if [ "`whoami`" == "awx" ] 
 then 
   mkdir ~/.ssh 2>/dev/null
@@ -46,7 +46,8 @@ sed -i -e '/^rhel/ s/$/.kveghdemo.at/g' inventory/hosts
 
 if [ "$1" == "--list" ] ; then
 
-python3 inventory2json.py inventory/hosts
+# python3 inventory2json.py inventory/hosts
+ansible-inventory -i inventory/hosts --list
 
 elif [ "$1" == "--host" ]; then
   echo '{"_meta": {"hostvars": {}}}'
