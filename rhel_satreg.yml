@@ -45,7 +45,7 @@
             state: present
             activationkey: Insights_Key_RHEL7
             org_id: SuperCorp
-            auto_attach: true
+            #            auto_attach: true
 
         - name: on RHEL7 we need to update subscription-manager
           package:
@@ -68,9 +68,9 @@
         - name: Register to satellite with activationkey and consume subscriptions 
           redhat_subscription:
             state: present
-            activationkey: Insights_Key_RHEL8
+            activationkey: AK_RHEL_Test
             org_id: SuperCorp
-            auto_attach: true
+            #            auto_attach: true
 
         - name: enable Satellite Host Tools repo 
           rhsm_repository:
