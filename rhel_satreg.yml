@@ -44,9 +44,10 @@
           redhat_subscription:
             state: present
             # activationkey: Insights_Key_RHEL7
-            activationkey: AK_RHEL_Test
+            activationkey: RHEL_74_AK_ng
             org_id: SuperCorp
             #            auto_attach: true
+          ignore_errors: yes
 
         - name: on RHEL7 we need to update subscription-manager
           package:
