@@ -17,10 +17,10 @@
       shell: "export LIBGUESTFS_BACKEND=direct; export LIBGUESTFS_PATH=/home/kvegh/appliance/; virt-sysprep -d {{ os_type }}-{{ project_name }}{{ item }} --hostname {{ os_type }}-{{ project_name }}{{ item }} --operations defaults" 
       with_sequence: count={{ number_of_hosts }}
 
-    - name: transfer/prep SSH public key or keys to be injected into the images. 
-      copy: 
-        src: /opt/data/keys/ssh_pubkey
-        dest: /home/ansible/addkey
+      #    - name: transfer/prep SSH public key or keys to be injected into the images. 
+      #      copy: 
+      #        src: /opt/data/keys/ssh_pubkey
+      #        dest: /home/ansible/addkey
 
     - name: sysprep VM plant keys {{ os_type }}-{{ project_name }} items
       shell: "export LIBGUESTFS_BACKEND=direct; export LIBGUESTFS_PATH=/home/kvegh/appliance/; virt-sysprep -d {{ os_type }}-{{ project_name }}{{ item }} --ssh-inject ansible:file:/home/ansible/addkey --selinux-relabel" 
