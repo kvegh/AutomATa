@@ -43,7 +43,8 @@
         - name: Register to satellite with activationkey and consume subscriptions 
           redhat_subscription:
             state: present
-            activationkey: Insights_Key_RHEL7
+            # activationkey: Insights_Key_RHEL7
+            activationkey: AK_RHEL_Test
             org_id: SuperCorp
             #            auto_attach: true
 
