@@ -75,12 +75,13 @@
       notify: insights_reboot_handler
   handlers:
     - name: insights_reboot_handler
-      set_fact:
+      ansible.builtin.set_fact:
         insights_needs_reboot: true
 
 # Configure auditd admin_space_left Action on Low Disk Space
 # Identifier: (ssg:rhel7|content_profile_cis|xccdf_org.ssgproject.content_rule_auditd_data_retention_admin_space_left_action,fix)
 # Version: 48db51056597f5613713a8068ac1b4e9bee869d8
+
 - name: Configure auditd admin_space_left Action on Low Disk Space
   hosts: rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at
   become: true

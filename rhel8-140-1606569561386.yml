@@ -80,12 +80,13 @@
       notify: insights_reboot_handler
   handlers:
     - name: insights_reboot_handler
-      set_fact:
+      ansible.builtin.set_fact:
         insights_needs_reboot: true
 
 # Set Password Minimum Age
 # Identifier: (ssg:rhel7|content_profile_cis|xccdf_org.ssgproject.content_rule_accounts_minimum_age_login_defs,fix)
 # Version: 48db51056597f5613713a8068ac1b4e9bee869d8
+
 - name: Set Password Minimum Age
   hosts: rhel-kvegh-nt50-801.kveghdemo.at
   become: true
