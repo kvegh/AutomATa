@@ -3,10 +3,10 @@
   hosts: all
 
   tasks:
-  - name: unregister insights hosts
-    redhat.insights.insights_register: 
-      state: absent
+    - name: unregister insights hosts
+      redhatinsights.insights.insights_register:
+        state: absent
 
-  - name: reregister insights hosts
-    redhat.insights.insights_register: 
-      state: present
+    - name: reregister insights hosts
+      redhatinsights.insights.insights_register:
+        state: present

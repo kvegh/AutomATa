@@ -3,26 +3,26 @@
   hosts: localhost
   connection: local
   vars:
-      host_name: tjocp
-      number_of_hosts: 3
+    host_name: tjocp
+    number_of_hosts: 3
 
   tasks:
     - name: remove ssh known_hosts entries locally
-      known_hosts:
-        name: "{{ host_name }}{{ item }}"
-        state: absent 
       with_sequence: count={{ number_of_hosts }}
+      ansible.builtin.known_hosts:
+        name: "{{ host_name }}{{ item }}"
+        state: absent
 
     - name: scan for keys
       # shell: ssh-keyscan -t ecdsa  {{ item }},$(dig +short {{ item }})
-      shell: ssh-keyscan -t ecdsa {{ item }}
       with_items: "{{ groups['TJtest'] }}"
       register: ssh_key_scanned
+      ansible.builtin.shell: ssh-keyscan -t ecdsa {{ item }}
 
     - name: add ssh known_hosts entries locally
-      known_hosts:
+      with_items: "{{ ssh_key_scanned.results }}"
+      ansible.builtin.known_hosts:
         name: "{{ item.item }}"
         state: present
         path: ~/.ssh/known_hosts
         key: "{{ item.stdout }}"
-      with_items: "{{ ssh_key_scanned.results }}"

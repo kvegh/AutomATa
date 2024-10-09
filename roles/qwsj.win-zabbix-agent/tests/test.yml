@@ -2,7 +2,6 @@
 - hosts: windows
   remote_user: Administrator
   vars:
-    - zabbix_server_ip: '10.10.10.22'
+    - zabbix_server_ip: 10.10.10.22
   roles:
     - { role: qwsj.win-zabbix-agent }
-    

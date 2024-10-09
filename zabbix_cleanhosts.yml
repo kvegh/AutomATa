@@ -1,14 +1,14 @@
 ---
 - name: Setup Zabbix client
-  user: ansible 
-  hosts: 
+  user: ansible
+  hosts:
     - rhel_vms
     - win_vms
 
   tasks:
     - name: Drop hosts from Zabbix
       local_action:
-        module: zabbix_host
+        module: community.zabbix.zabbix_host
         server_url: http://zabbix/zabbix
         login_user: Admin
         login_password: zabbix
@@ -25,8 +25,7 @@
           - Template OS Linux
         status: enabled
         state: absent
-        interfaces: 
+        interfaces:
           - type: agent
             main: 1
             dns: "{{ inventory_hostname }}"
-

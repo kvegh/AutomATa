@@ -1,36 +1,36 @@
 ---
 - name: Add webserver nodes to pool
   hosts:
-  - rhel_vms
-  - win_vms
+    - rhel_vms
+    - win_vms
 
   tasks:
-   - name: add RHEL nodes to pool
-     bigip_pool_member:
-       description: webserver-1
-       host: "{{ ansible_eth1.ipv4.address }}"
-       name: "{{ inventory_hostname }}"
-       provider: 
-         password: admin
-         server: f5
-         user: admin
-         validate_certs: no
-       pool: web-pool
-       port: 80
-     when: ansible_os_family == "RedHat"
-     delegate_to: localhost
-  
-   - name: add Windows nodes to pool
-     bigip_pool_member:
-       description: webserver-1
-       host: "{{ ansible_ip_addresses[2] }}"
-       name: "{{ inventory_hostname }}"
-       provider: 
-         password: admin
-         server: f5
-         user: admin
-         validate_certs: no
-       pool: web-pool
-       port: 80
-     when: ansible_os_family == "Windows"
-     delegate_to: localhost
+    - name: add RHEL nodes to pool
+      when: ansible_os_family == "RedHat"
+      delegate_to: localhost
+      f5networks.f5_modules.bigip_pool_member:
+        description: webserver-1
+        host: "{{ ansible_eth1.ipv4.address }}"
+        name: "{{ inventory_hostname }}"
+        provider:
+          password: admin
+          server: f5
+          user: admin
+          validate_certs: false
+        pool: web-pool
+        port: 80
+
+    - name: add Windows nodes to pool
+      when: ansible_os_family == "Windows"
+      delegate_to: localhost
+      f5networks.f5_modules.bigip_pool_member:
+        description: webserver-1
+        host: "{{ ansible_ip_addresses[2] }}"
+        name: "{{ inventory_hostname }}"
+        provider:
+          password: admin
+          server: f5
+          user: admin
+          validate_certs: false
+        pool: web-pool
+        port: 80

@@ -3,7 +3,6 @@
   hosts: all
   become: true
   tasks:
-
     - name: Invoke role insights-client-role
       import_role:
         name: insights-client-role

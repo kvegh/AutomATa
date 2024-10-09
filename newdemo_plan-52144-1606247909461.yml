@@ -1,4 +1,4 @@
-﻿---
+---
 # Red Hat Insights has recommended one or more actions for you, a system administrator, to review and if you
 # deem appropriate, deploy on your systems running Red Hat software. Based on the analysis, we have automatically
 # generated an Ansible Playbook for you. Please review and test the recommended actions and the Playbook as
@@ -11,154 +11,153 @@
 # Warning: Some of the rules in the plan do not have Ansible support and this playbook does not address them!
 
 - name: run insights to obtain latest report info
-  hosts: "rhel-kvegh-nt46-711.kveghdemo.at,rhel-kvegh-nt46-741.kveghdemo.at,rhel-kvegh-nt46-801.kveghdemo.at"
-  become: True
+  hosts: rhel-kvegh-nt46-711.kveghdemo.at,rhel-kvegh-nt46-741.kveghdemo.at,rhel-kvegh-nt46-801.kveghdemo.at
+  become: true
   tasks:
     - name: determine insights version
-      shell: 'redhat-access-insights --version'
       changed_when: false
       register: insights_version
+      ansible.builtin.shell: redhat-access-insights --version
 
     - when: insights_version.stdout[0:2] != '1.'
       block:
         - name: obtaining insights report
-          shell: 'redhat-access-insights --to-json --quiet'
           register: insights_result
           changed_when: false
           check_mode: false
+          ansible.builtin.shell: redhat-access-insights --to-json --quiet
+
         - name: register insights report as fact for use by other plays
-          set_fact: insights_report={{ insights_result.stdout }}
+          ansible.builtin.set_fact:
+            insights_report: "{{ insights_result.stdout }}"
 
     - when: insights_version.stdout[0:2] == '1.'
       block:
         - name: obtaining insights report (legacy client)
-          shell: 'redhat-access-insights --verbose | grep "Upload status: 201 Created" | grep -o "{.*}"'
           register: insights_result_legacy
           changed_when: false
           check_mode: false
-        - name: register insights report as fact for use by other plays (legacy client)
-          set_fact: insights_report={{ insights_result_legacy.stdout }}
+          ansible.builtin.shell: 'redhat-access-insights --verbose | grep "Upload status: 201 Created" | grep -o "{.*}"'
 
-# VM network performance is decreased when the vhost_net kernel feature is not enabled
-# Identifier: (decreased_vm_network_performance|VHOST_NET_KERNEL_MODULE_NOT_LOADED,105,fix)
-# Version: f1145a8dec3ce58201f2d4bbc0352b5faa637a0d
+        - name: register insights report as fact for use by other plays (legacy client)
+          ansible.builtin.set_fact:
+            insights_report: "{{ insights_result_legacy.stdout }}"
+
 - name: Load the vhost_net module and also configure persistently loading of the vhost_net module on reboot.
-  hosts: "rhel-kvegh-nt46-801.kveghdemo.at"
+  hosts: rhel-kvegh-nt46-801.kveghdemo.at
   become: true
 
   tasks:
     - when: ansible_distribution_major_version == "8"
       block:
         - name: Load vhost_net module
-          modprobe:
+          community.general.modprobe:
             name: vhost_net
             state: present
 
         - name: Create /etc/modules-load.d/vhost_net.conf
-          file:
+          ansible.builtin.file:
             path: /etc/modules-load.d/vhost_net.conf
             state: touch
-            mode: 0755
+            mode: 493
 
         - name: Insert 'vhost_net' string in /etc/modules-load.d/vhost_net.conf
-          copy:
+          ansible.builtin.copy:
             dest: /etc/modules-load.d/vhost_net.conf
-            content: "vhost_net"
-            mode: 0755
-
+            content: vhost_net
+            mode: 493
 
 # The dnf installs lower versions of packages when the "best" option is not present in the /etc/dnf/dnf.conf
 # Identifier: (dnf_install_update_issue|DNF_INSTALL_UPDATE_ISSUE_INFO,105,fix)
 # Version: c5f5b1e58368e0156a586ef1b276dd4c86533c2d
 # autotest rhel8.2
+
 - name: Set best opiton to True in /etc/dnf/dnf.conf
-  hosts: "rhel-kvegh-nt46-801.kveghdemo.at"
+  hosts: rhel-kvegh-nt46-801.kveghdemo.at
   become: true
 
   tasks:
-  - name: Check if /etc/dnf/dnf.conf file exists
-    stat:
-       path: /etc/dnf/dnf.conf
-    register: reg_dnf_conf
+    - name: Check if /etc/dnf/dnf.conf file exists
+      register: reg_dnf_conf
+      ansible.builtin.stat:
+        path: /etc/dnf/dnf.conf
 
-  - name: Set best option in file /etc/dnf/dnf.conf
-    lineinfile:
-      path: /etc/dnf/dnf.conf
-      insertafter: '^\[main\]'
-      line: "best=True"
-      state: present
-      backup: True
-    when: reg_dnf_conf.stat.exists
+    - name: Set best option in file /etc/dnf/dnf.conf
+      when: reg_dnf_conf.stat.exists
 
+      # Decreased security: System log permissions
+      # Identifier: (hardening_logging_log_perms|HARDENING_LOGGING_3_LOG_PERMS,105,default_perms)
+      # Version: 7b6bf61ac2a54eda32e0b1bb47df180004994534
+      ansible.builtin.lineinfile:
+        path: /etc/dnf/dnf.conf
+        insertafter: ^\[main\]
+        line: best=True
+        state: present
+        backup: true
 
-# Decreased security: System log permissions
-# Identifier: (hardening_logging_log_perms|HARDENING_LOGGING_3_LOG_PERMS,105,default_perms)
-# Version: 7b6bf61ac2a54eda32e0b1bb47df180004994534
 - name: Fix hardening_logging_log_perms issue
-  hosts: "rhel-kvegh-nt46-711.kveghdemo.at"
+  hosts: rhel-kvegh-nt46-711.kveghdemo.at
   become: true
   vars:
     pydata: '{{ insights_report.details["hardening_logging_log_perms|HARDENING_LOGGING_3_LOG_PERMS"] }}'
     perms:
-      "/var/log": { owner: "root", group: "root", mode: "u=rw,o-w" }
-      "/var/log/wtmp": { owner: "root", group: "utmp", mode: "u=rw,g-x,o-wx" }
-      "/var/log/btmp": { owner: "root", group: "utmp", mode: "u=rw,g-rwx,o-rwx" }
-      "/var/log/audit": { owner: "root", group: "root", mode: "u=rw,o-rwx" }
-      "/var/log/boot.log": { owner: "root", group: "root", mode: "u=rw,g-x,o-wx" }
-      "/var/log/dmesg": { owner: "root", group: "root", mode: "u=rw,g-x,o-wx" }
-      "/var/log/lastlog": { owner: "root", group: "utmp", mode: "u=rw,g-x,o-wx" }
-      "/var/log/messages": { owner: "root", group: "root", mode: "u=rw,g-x,o-wx" }
-      "/var/log/spooler": { owner: "root", group: "root", mode: "u=rw,g-x,o-wx" }
-      "/var/log/tallylog": { owner: "root", group: "root", mode: "u=rw,g-x,o-wx" }
-      "/var/log/yum.log": { owner: "root", group: "root", mode: "u=rw,g-x,o-wx" }
-      "/var/log/cron": { owner: "root", group: "root", mode: "u=rw,g-x,o-rwx" }
-      "/var/log/maillog": { owner: "root", group: "root", mode: "u=rw,g-x,o-rwx" }
-      "/var/log/secure": { owner: "root", group: "root", mode: "u=rw,g-x,o-rwx" }
-
+      /var/log: { owner: root, group: root, mode: "u=rw,o-w" }
+      /var/log/wtmp: { owner: root, group: utmp, mode: "u=rw,g-x,o-wx" }
+      /var/log/btmp: { owner: root, group: utmp, mode: "u=rw,g-rwx,o-rwx" }
+      /var/log/audit: { owner: root, group: root, mode: "u=rw,o-rwx" }
+      /var/log/boot.log: { owner: root, group: root, mode: "u=rw,g-x,o-wx" }
+      /var/log/dmesg: { owner: root, group: root, mode: "u=rw,g-x,o-wx" }
+      /var/log/lastlog: { owner: root, group: utmp, mode: "u=rw,g-x,o-wx" }
+      /var/log/messages: { owner: root, group: root, mode: "u=rw,g-x,o-wx" }
+      /var/log/spooler: { owner: root, group: root, mode: "u=rw,g-x,o-wx" }
+      /var/log/tallylog: { owner: root, group: root, mode: "u=rw,g-x,o-wx" }
+      /var/log/yum.log: { owner: root, group: root, mode: "u=rw,g-x,o-wx" }
+      /var/log/cron: { owner: root, group: root, mode: "u=rw,g-x,o-rwx" }
+      /var/log/maillog: { owner: root, group: root, mode: "u=rw,g-x,o-rwx" }
+      /var/log/secure: { owner: root, group: root, mode: "u=rw,g-x,o-rwx" }
   tasks:
     - when: insights_report.details["hardening_logging_log_perms|HARDENING_LOGGING_3_LOG_PERMS"] is defined
       block:
         - name: Set the correct permissions on affected log files
-          file:
+          with_items: "{{ pydata.detected_problem_log_perms }}"
+
+          # Decreased security: OpenSSH ClientAlive settings
+          # Identifier: (hardening_ssh_client_alive|OPENSSH_HARDENING_CLIENT_ALIVE,105,fix)
+          # Version: c988b9061f0c3720900ae391d72a59a89bf57294
+          ansible.builtin.file:
             path: "{{ item.log_perms_dirfilename }}"
             owner: "{{ perms[item.log_perms_dirfilename]['owner'] }}"
             group: "{{ perms[item.log_perms_dirfilename]['group'] }}"
             mode: "{{ perms[item.log_perms_dirfilename]['mode'] }}"
-          with_items: "{{ pydata.detected_problem_log_perms }}"
 
-
-# Decreased security: OpenSSH ClientAlive settings
-# Identifier: (hardening_ssh_client_alive|OPENSSH_HARDENING_CLIENT_ALIVE,105,fix)
-# Version: c988b9061f0c3720900ae391d72a59a89bf57294
 - name: Set ClientMaxAlive and ClientAliveInterval. Restart sshd service.
-  hosts: "rhel-kvegh-nt46-711.kveghdemo.at,rhel-kvegh-nt46-741.kveghdemo.at,rhel-kvegh-nt46-801.kveghdemo.at"
-  become: yes
+  hosts: rhel-kvegh-nt46-711.kveghdemo.at,rhel-kvegh-nt46-741.kveghdemo.at,rhel-kvegh-nt46-801.kveghdemo.at
+  become: true
   tasks:
     - name: Update ClientAliveInterval setting
-      lineinfile:
+      ansible.builtin.lineinfile:
         dest: /etc/ssh/sshd_config
-        backup: yes
-        regexp: '(?i)^\s*ClientAliveInterval\s+[0-9]+'
-        line: 'ClientAliveInterval 300'
+        backup: true
+        regexp: (?i)^\s*ClientAliveInterval\s+[0-9]+
+        line: ClientAliveInterval 300
 
     - name: Update ClientMaxAlive setting
-      lineinfile:
+      ansible.builtin.lineinfile:
         dest: /etc/ssh/sshd_config
-        backup: yes
-        regexp: '(?i)^\s*ClientAliveCountMax\s+[0-9]+'
-        line: 'ClientAliveCountMax 0'
+        backup: true
+        regexp: (?i)^\s*ClientAliveCountMax\s+[0-9]+
+        line: ClientAliveCountMax 0
 
     - name: restart sshd service
-      service:
+      ansible.builtin.service:
         name: sshd
         state: restarted
 
-
 - name: run insights
-  hosts: "rhel-kvegh-nt46-711.kveghdemo.at,rhel-kvegh-nt46-741.kveghdemo.at,rhel-kvegh-nt46-801.kveghdemo.at"
-  become: True
-  gather_facts: False
+  hosts: rhel-kvegh-nt46-711.kveghdemo.at,rhel-kvegh-nt46-741.kveghdemo.at,rhel-kvegh-nt46-801.kveghdemo.at
+  become: true
+  gather_facts: false
   tasks:
     - name: run insights
-      command: redhat-access-insights
       changed_when: false
+      ansible.builtin.command: redhat-access-insights

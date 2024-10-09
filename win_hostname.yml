@@ -1,13 +1,13 @@
 ---
-- name: set local hostname 
+- name: set local hostname
   hosts: win_vms
 
   tasks:
     - name: Change the hostname to new_hostname
-      win_hostname:
-        name: "{{ inventory_hostname }}"
       register: res
+      ansible.windows.win_hostname:
+        name: "{{ inventory_hostname }}"
 
     - name: reboot to get new hostname take effect
-      win_reboot: 
-#      when: res.reboot_required
+      ansible.windows.win_reboot:
+    #      when: res.reboot_required

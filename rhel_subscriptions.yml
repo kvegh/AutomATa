@@ -1,13 +1,13 @@
 ---
 - name: set up hetzner subscription
   hosts: all
-  vars_files: 
+  vars_files:
     - /home/ansible/secvar/cred.yml
 
-  tasks: 
-  - name: setup subscription
-    redhat_subscription: 
-      state: present
-      username: "{{ rhsm_access_account }}"
-      password: "{{ rhsm_access_token }}"
-      auto_attach: true
+  tasks:
+    - name: setup subscription
+      community.general.redhat_subscription:
+        state: present
+        username: "{{ rhsm_access_account }}"
+        password: "{{ rhsm_access_token }}"
+        auto_attach: true

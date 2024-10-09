@@ -15,58 +15,56 @@
 # Version: c5f5b1e58368e0156a586ef1b276dd4c86533c2d
 # autotest rhel8.2
 - name: Set best opiton to True in /etc/dnf/dnf.conf
-  hosts: "rhel-kvegh-demo4-801.kveghdemo.at"
+  hosts: rhel-kvegh-demo4-801.kveghdemo.at
   become: true
 
   tasks:
-  - name: Check if /etc/dnf/dnf.conf file exists
-    stat:
-       path: /etc/dnf/dnf.conf
-    register: reg_dnf_conf
+    - name: Check if /etc/dnf/dnf.conf file exists
+      stat:
+        path: /etc/dnf/dnf.conf
+      register: reg_dnf_conf
 
-  - name: Set best option in file /etc/dnf/dnf.conf
-    lineinfile:
-      path: /etc/dnf/dnf.conf
-      insertafter: '^\[main\]'
-      line: "best=True"
-      state: present
-      backup: True
-    when: reg_dnf_conf.stat.exists
-
+    - name: Set best option in file /etc/dnf/dnf.conf
+      lineinfile:
+        path: /etc/dnf/dnf.conf
+        insertafter: ^\[main\]
+        line: best=True
+        state: present
+        backup: true
+      when: reg_dnf_conf.stat.exists
 
 # Decreased security: OpenSSH ClientAlive settings
 # Identifier: (advisor:hardening_ssh_client_alive|OPENSSH_HARDENING_CLIENT_ALIVE,fix)
 # Version: c988b9061f0c3720900ae391d72a59a89bf57294
 - name: Set ClientMaxAlive and ClientAliveInterval. Restart sshd service.
-  hosts: "rhel-kvegh-demo4-801.kveghdemo.at"
-  become: yes
+  hosts: rhel-kvegh-demo4-801.kveghdemo.at
+  become: true
   tasks:
     - name: Update ClientAliveInterval setting
       lineinfile:
         dest: /etc/ssh/sshd_config
-        backup: yes
-        regexp: '(?i)^\s*ClientAliveInterval\s+[0-9]+'
-        line: 'ClientAliveInterval 300'
+        backup: true
+        regexp: (?i)^\s*ClientAliveInterval\s+[0-9]+
+        line: ClientAliveInterval 300
 
     - name: Update ClientMaxAlive setting
       lineinfile:
         dest: /etc/ssh/sshd_config
-        backup: yes
-        regexp: '(?i)^\s*ClientAliveCountMax\s+[0-9]+'
-        line: 'ClientAliveCountMax 0'
+        backup: true
+        regexp: (?i)^\s*ClientAliveCountMax\s+[0-9]+
+        line: ClientAliveCountMax 0
 
     - name: restart sshd service
       service:
         name: sshd
         state: restarted
 
-
 - name: run insights
-  hosts: "rhel-kvegh-demo4-801.kveghdemo.at"
+  hosts: rhel-kvegh-demo4-801.kveghdemo.at
   vars:
-    insights_signature_exclude: "/hosts"
-  become: True
-  gather_facts: False
+    insights_signature_exclude: /hosts
+  become: true
+  gather_facts: false
   tasks:
     - name: run insights
       command: insights-client

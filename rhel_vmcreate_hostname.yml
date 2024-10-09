@@ -1,44 +1,41 @@
 ---
-- name: manage libvirt guests 
-  user: ansible 
+- name: manage libvirt guests
+  user: ansible
   hosts: baremetal
   vars:
-      host_name: web
-      number_of_hosts: 2
+    host_name: web
+    number_of_hosts: 2
 
   tasks:
-# not going to do xml_lookup just for a template, thank you. 
-# going with 'command" module and virt-clone
+    # not going to do xml_lookup just for a template, thank you. 
+    # going with 'command" module and virt-clone
     - name: create VM {{ host_name }} items by cloning image
-      command: "virt-clone --original=rhel-image --name={{ host_name }}{{ item }} --auto-clone"
       with_sequence: count={{ number_of_hosts }}
+      ansible.builtin.command: virt-clone --original=rhel-image --name={{ host_name }}{{ item }} --auto-clone
 
-    - name: sysprep VM {{ host_name }} 
-      command: "virt-sysprep -d {{ host_name }}{{ item }} --hostname {{ host_name }}{{ item }} --operations defaults" 
+    - name: sysprep VM {{ host_name }}
       with_sequence: count={{ number_of_hosts }}
+      ansible.builtin.command: virt-sysprep -d {{ host_name }}{{ item }} --hostname {{ host_name }}{{ item }} --operations defaults
 
-    - name: transfer/prep SSH public key or keys to be injected into the images. 
-      copy: 
+    - name: transfer/prep SSH public key or keys to be injected into the images.
+      ansible.builtin.copy:
         src: /opt/data/keys/ssh_pubkey
         dest: /home/ansible/addkey
 
-
     - name: sysprep VM plant keys {{ host_name }} items
-      command: "virt-sysprep -d {{ host_name }}{{ item }} --ssh-inject ansible:file:/home/ansible/addkey --selinux-relabel" 
       with_sequence: count={{ number_of_hosts }}
-    
+      ansible.builtin.command: virt-sysprep -d {{ host_name }}{{ item }} --ssh-inject ansible:file:/home/ansible/addkey --selinux-relabel
+
     - name: set description to {{ host_name }} items
-      command: "virsh desc {{ host_name }}{{ item }} --title {{ host_name }}{{ item }}"
       with_sequence: count={{ number_of_hosts }}
-    
+      ansible.builtin.command: virsh desc {{ host_name }}{{ item }} --title {{ host_name }}{{ item }}
+
     - name: start guest VM "{{ host_name }}"
-      virt:
-          name: "{{ host_name }}{{ item }}"
-          state: running
       with_sequence: count={{ number_of_hosts }}
+      community.libvirt.virt:
+        name: "{{ host_name }}{{ item }}"
+        state: running
 
     - name: allow DHCP/DNS to register
-      pause:
+      ansible.builtin.pause:
         minutes: 1
-    
-

@@ -2,26 +2,27 @@
 - name: manage ssh keys
   hosts: hetzner
   vars:
-      host_name: web
+    host_name: web
 
   tasks:
     - name: remove ssh known_hosts entries locally
-      known_hosts:
+      ansible.builtin.known_hosts:
         name: "{{ host_name }}"
-        state: absent 
+        state: absent
 
     - name: scan for keys
       # shell: ssh-keyscan -t ecdsa  {{ item }},$(dig +short {{ item }})
-      shell: ssh-keyscan -t ecdsa  {{ host_name }}
       with_items: "{{ groups['gatewayed'] }}"
       register: ssh_key_scanned
-      
-    - debug: var=ssh_key_scanned
+      ansible.builtin.shell: ssh-keyscan -t ecdsa  {{ host_name }}
+
+    - ansible.builtin.debug:
+        var: ssh_key_scanned
 
     - name: add ssh known_hosts entries locally
-      known_hosts:
+      with_items: "{{ ssh_key_scanned.results }}"
+      ansible.builtin.known_hosts:
         name: "{{ host_name }}"
         state: present
         path: /home/ansible/.ssh/known_hosts
         key: "{{ item.stdout }}"
-      with_items: "{{ ssh_key_scanned.results }}"

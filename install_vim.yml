@@ -1,13 +1,13 @@
 ---
 - name: install packages
-  hosts: all 
-  become: yes 
-  vars: 
-    packages: 
+  hosts: all
+  become: true
+  vars:
+    packages:
       - vim
 
-  tasks: 
-  - name: package installs 
-    package: 
-      name: vim
-      state: latest
+  tasks:
+    - name: package installs
+      ansible.builtin.package:
+        name: vim
+        state: latest

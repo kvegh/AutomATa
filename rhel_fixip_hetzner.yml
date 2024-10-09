@@ -1,60 +1,53 @@
 ---
-- name: move from DHCP to desired fix IP 
-  hosts: all 
-  
-  tasks: 
-  - name: prerequisit packages
-    yum: 
-      name: NetworkManager-glib
-      state: present
+- name: move from DHCP to desired fix IP
+  hosts: all
 
-  - name: set fix IP and reboot 
-    nmcli:
-      conn_name: eth0-static 
-      ifname: eth0
-      ip4: 192.168.122.120/24
-      gw4: 192.168.122.1
-      type: ethernet
-      state: present
-      dns4: 192.168.122.1  
-    when: ansible_hostname == "ansible-h"
+  tasks:
+    - name: prerequisit packages
+      ansible.builtin.yum:
+        name: NetworkManager-glib
+        state: present
 
-  - name: set fix IP and reboot 
-    nmcli:
-      conn_name: eth0-static 
-      ifname: eth0
-      ip4: 192.168.122.130/24
-      gw4: 192.168.122.1
-      type: ethernet
-      state: present
-      dns4: 192.168.122.1  
-    when: ansible_hostname == "satellite-h"
+    - name: set fix IP and reboot
+      when: ansible_hostname == "ansible-h"
+      community.general.nmcli:
+        conn_name: eth0-static
+        ifname: eth0
+        ip4: 192.168.122.120/24
+        gw4: 192.168.122.1
+        type: ethernet
+        state: present
+        dns4: 192.168.122.1
 
-  # ehhh this needed due to a bug in nmcli module: 
-  # https://github.com/ansible/ansible/issues/36615
-  - name: set the connection ip4.method to manual
-    command: nmcli con modify eth0-static ipv4.method manual
+    - name: set fix IP and reboot
+      when: ansible_hostname == "satellite-h"
 
-  - name: setup hosts file entries
-    lineinfile:
-      path: /etc/hosts
-      line: "{{ item }}"
-    with_items: 
-      - "192.168.122.120 tower ansible-h"
-      - "192.168.122.130 satellite satellite-h satellite-h.example.com satellite.example.com"
-      - "192.168.122.140 zabbix zabbix-h"
-      - "192.168.122.150 f5 f5-h"
-      - "192.168.122.1 hetzner"
+      # ehhh this needed due to a bug in nmcli module: 
+      # https://github.com/ansible/ansible/issues/36615
+      community.general.nmcli:
+        conn_name: eth0-static
+        ifname: eth0
+        ip4: 192.168.122.130/24
+        gw4: 192.168.122.1
+        type: ethernet
+        state: present
+        dns4: 192.168.122.1
 
-#  - name: start delayed reboot
-#    reboot: 
-#       pre_reboot_delay: 20
-#       msg: Rebooted by Ansible to finalize/test network config change
-#    async: 10
-#    poll: 0
-    
-  - name: enable new connection
-    shell: sleep 3s ; nmcli con down eth0 ; nmcli con up eth0-static ; systemctl reboot
-    async: 10
-    poll: 0 
+    - name: set the connection ip4.method to manual
+      ansible.builtin.command: nmcli con modify eth0-static ipv4.method manual
 
+    - name: setup hosts file entries
+      with_items:
+        - 192.168.122.120 tower ansible-h
+        - 192.168.122.130 satellite satellite-h satellite-h.example.com satellite.example.com
+        - 192.168.122.140 zabbix zabbix-h
+        - 192.168.122.150 f5 f5-h
+        - 192.168.122.1 hetzner
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ item }}"
+
+    - name: enable new connection
+      async: 10
+      poll: 0
+      ansible.builtin.shell: sleep 3s ; nmcli con down eth0 ; nmcli con up eth0-static ; systemctl reboot

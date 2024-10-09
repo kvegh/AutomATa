@@ -1,74 +1,73 @@
+---
 - name: create Azure VM
   hosts: localhost
-#  vars_files: 
-#    - /home/ansible/secvar/azure_cred.yml
+  #  vars_files: 
+  #    - /home/ansible/secvar/azure_cred.yml
 
+  tasks:
+    - name: create resource groups
+      azure_rm_resourcegroup:
+        name: "{{ resourcegroup_name }}"
+        location: westus
+        tags:
+          testing: testing
 
-  tasks: 
-  - name: create resource groups
-    azure_rm_resourcegroup:
-      name: "{{ resourcegroup_name }}"
-      location: westus
-      tags:
-        testing: testing
-
-  - name: Create a virtual network
-    azure_rm_virtualnetwork:
-      name: firstnetwork
-      resource_group: "{{ resourcegroup_name }}"
-      address_prefixes_cidr:
-          - "10.1.0.0/16"
-          - "172.100.0.0/16"
-      dns_servers:
-          - "127.0.0.1"
-          - "127.0.0.2"
-      tags:
+    - name: Create a virtual network
+      azure_rm_virtualnetwork:
+        name: firstnetwork
+        resource_group: "{{ resourcegroup_name }}"
+        address_prefixes_cidr:
+          - 10.1.0.0/16
+          - 172.100.0.0/16
+        dns_servers:
+          - 127.0.0.1
+          - 127.0.0.2
+        tags:
           testing: testing
           delete: on-exit
 
-  - name: Create a subnet
-    azure_rm_subnet:
-      name: firstsubnet
-      virtual_network_name: firstnetwork
-      resource_group: "{{ resourcegroup_name }}"
-      address_prefix_cidr: "10.1.0.0/24"
-      state: present
-  
-  - name: setup first jumphost
-    azure_rm_virtualmachine:
-      resource_group: "{{ resourcegroup_name }}"
-      name: proxyhost
-      vm_size: Standard_D1
-      admin_username: ansible
-      ssh_password_enabled: false
-      ssh_public_keys: 
-      - path: /home/ansible/.ssh/authorized_keys
-        key_data: "{{ automata_sshkey }}"
-      image:
-        offer: CentOS
-        publisher: OpenLogic
-        sku: '7.1'
-        version: latest
-    async: 1800
-    poll: 0
-    
-  - name: setup real clients
-    azure_rm_virtualmachine:
-      resource_group: "{{ resourcegroup_name }}"
-      name: "{{ vm_hostname }}-{{ item }}"
-      vm_size: Standard_D1
-      admin_username: ansible
-      ssh_password_enabled: false
-      ssh_public_keys: 
-      - path: /home/ansible/.ssh/authorized_keys
-        key_data: "{{ automata_sshkey }}"
-      image:
-        offer: CentOS
-        publisher: OpenLogic
-        sku: '7.1'
-        version: latest
-      public_ip_allocation_method: Disabled
-    loop: "{{ range(0, 50)|list }}" 
-    async: 1800
-    poll: 0
-    
+    - name: Create a subnet
+      azure_rm_subnet:
+        name: firstsubnet
+        virtual_network_name: firstnetwork
+        resource_group: "{{ resourcegroup_name }}"
+        address_prefix_cidr: 10.1.0.0/24
+        state: present
+
+    - name: setup first jumphost
+      azure_rm_virtualmachine:
+        resource_group: "{{ resourcegroup_name }}"
+        name: proxyhost
+        vm_size: Standard_D1
+        admin_username: ansible
+        ssh_password_enabled: false
+        ssh_public_keys:
+          - path: /home/ansible/.ssh/authorized_keys
+            key_data: "{{ automata_sshkey }}"
+        image:
+          offer: CentOS
+          publisher: OpenLogic
+          sku: "7.1"
+          version: latest
+      async: 1800
+      poll: 0
+
+    - name: setup real clients
+      azure_rm_virtualmachine:
+        resource_group: "{{ resourcegroup_name }}"
+        name: "{{ vm_hostname }}-{{ item }}"
+        vm_size: Standard_D1
+        admin_username: ansible
+        ssh_password_enabled: false
+        ssh_public_keys:
+          - path: /home/ansible/.ssh/authorized_keys
+            key_data: "{{ automata_sshkey }}"
+        image:
+          offer: CentOS
+          publisher: OpenLogic
+          sku: "7.1"
+          version: latest
+        public_ip_allocation_method: Disabled
+      loop: "{{ range(0, 50)|list }}"
+      async: 1800
+      poll: 0

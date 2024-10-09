@@ -1,30 +1,29 @@
 ---
-- name: manage libvirt guests 
-  user: ansible 
+- name: manage libvirt guests
+  user: ansible
   hosts: baremetal
   vars:
-      project_name: web
-      number_of_hosts: 2
-      os_type: win
-
+    project_name: web
+    number_of_hosts: 2
+    os_type: win
 
   tasks:
-# not going to do xml_lookup just for a template, thank you. 
-# going with 'command" module and virt-clone
+    # not going to do xml_lookup just for a template, thank you. 
+    # going with 'command" module and virt-clone
     - name: create VM {{ os_type }}-{{ project_name }} items by cloning image
-      command: "virt-clone --original=win-image --name={{ os_type }}-{{ project_name }}{{ item }} --auto-clone"
       with_sequence: count={{ number_of_hosts }}
+      ansible.builtin.command: virt-clone --original=win-image --name={{ os_type }}-{{ project_name }}{{ item }} --auto-clone
 
     - name: set description to {{ os_type }}-{{ project_name }} items
-      command: "virsh desc {{ os_type }}-{{ project_name }}{{ item }} --title {{ os_type }}-{{ project_name }}{{ item }}"
       with_sequence: count={{ number_of_hosts }}
-    
+      ansible.builtin.command: virsh desc {{ os_type }}-{{ project_name }}{{ item }} --title {{ os_type }}-{{ project_name }}{{ item }}
+
     - name: start guest VMs {{ os_type }}-{{ project_name }} items
-      virt:
-          name: "{{ os_type }}-{{ project_name }}{{ item }}"
-          state: running
       with_sequence: count={{ number_of_hosts }}
-    
+      community.libvirt.virt:
+        name: "{{ os_type }}-{{ project_name }}{{ item }}"
+        state: running
+
     - name: allow DHCP/DNS to register
-      pause:
+      ansible.builtin.pause:
         minutes: 1

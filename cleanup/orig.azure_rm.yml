@@ -1,3 +1,4 @@
+---
 # The following host variables are always available:
 # public_ipv4_addresses: all public IP addresses, with the primary IP config from the primary NIC first
 # public_dns_hostnames: all public DNS hostnames, with the primary IP config from the primary NIC first
@@ -12,8 +13,6 @@
 # resource_type: the VM's resource type, eg: 'Microsoft.Compute/virtualMachine', 'Microsoft.Compute/virtualMachineScaleSets/virtualMachines'
 # vmid: the VM's internal SMBIOS ID, eg: '36bca69d-c365-4584-8c06-a62f4a1dc5d2'
 # vmss: if the VM is a member of a scaleset (vmss), a dictionary including the id and name of the parent scaleset
-
-
 # sample 'myazuresub.azure_rm.yaml'
 
 # required for all azure_rm inventory plugin configs
@@ -25,12 +24,12 @@ auth_source: cli
 
 # fetches VMs from an explicit list of resource groups instead of default all (- '*')
 include_vm_resource_groups:
-# - myrg1
-- automata
+  # - myrg1
+  - automata
 
 # fetches VMs from VMSSs in all resource groups (defaults to no VMSS fetch)
 include_vmss_resource_groups:
-- '*'
+  - "*"
 
 # places a host in the named group if the associated condition evaluates to true
 conditional_groups:
@@ -53,20 +52,20 @@ hostvar_expressions:
 
 # places hosts in dynamically-created groups based on a variable value.
 keyed_groups:
-# places each host in a group named 'tag_(tag name)_(tag value)' for each tag on a VM.
-- prefix: tag
-  key: tags
-# places each host in a group named 'azure_loc_(location name)', depending on the VM's location
-- prefix: azure_loc
-  key: location
-# places host in a group named 'some_tag_X' using the value of the 'sometag' tag on a VM as X, and defaulting to the
-# value 'none' (eg, the group 'some_tag_none') if the 'sometag' tag is not defined for a VM.
-- prefix: some_tag
-  key: tags.sometag | default('none')
+  # places each host in a group named 'tag_(tag name)_(tag value)' for each tag on a VM.
+  - prefix: tag
+    key: tags
+  # places each host in a group named 'azure_loc_(location name)', depending on the VM's location
+  - prefix: azure_loc
+    key: location
+  # places host in a group named 'some_tag_X' using the value of the 'sometag' tag on a VM as X, and defaulting to the
+  # value 'none' (eg, the group 'some_tag_none') if the 'sometag' tag is not defined for a VM.
+  - prefix: some_tag
+    key: tags.sometag | default('none')
 
 # excludes a host from the inventory when any of these expressions is true, can refer to any vars defined on the host
 exclude_host_filters:
-# excludes hosts in the eastus region
-- location in ['eastus']
-# excludes hosts that are powered off
-- powerstate != 'running'
+  # excludes hosts in the eastus region
+  - location in ['eastus']
+  # excludes hosts that are powered off
+  - powerstate != 'running'

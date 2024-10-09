@@ -14,10 +14,10 @@
 # Identifier: (ssg:rhel7|content_profile_cis|xccdf_org.ssgproject.content_rule_account_disable_post_pw_expiration,fix)
 # Version: 48db51056597f5613713a8068ac1b4e9bee869d8
 - name: Set Account Expiration Following Inactivity
-  hosts: 'rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at'
+  hosts: rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at
   become: true
   vars:
-    var_account_disable_post_pw_expiration: '35'
+    var_account_disable_post_pw_expiration: "35"
   tags:
     - CCE-27355-7
     - CJIS-5.6.2.1.1
@@ -39,22 +39,22 @@
         create: true
         dest: /etc/default/useradd
         regexp: ^INACTIVE
-        line: 'INACTIVE={{ var_account_disable_post_pw_expiration }}'
+        line: INACTIVE={{ var_account_disable_post_pw_expiration }}
       notify: insights_reboot_handler
   handlers:
     - name: insights_reboot_handler
-      set_fact:
+      ansible.builtin.set_fact:
         insights_needs_reboot: true
-
 
 # Ensure PAM Enforces Password Requirements - Minimum Different Categories
 # Identifier: (ssg:rhel7|content_profile_cis|xccdf_org.ssgproject.content_rule_accounts_password_pam_minclass,fix)
 # Version: 48db51056597f5613713a8068ac1b4e9bee869d8
+
 - name: Ensure PAM Enforces Password Requirements - Minimum Different Categories
-  hosts: 'rhel-kvegh-nt53-801.kveghdemo.at'
+  hosts: rhel-kvegh-nt53-801.kveghdemo.at
   become: true
   vars:
-    var_password_pam_minclass: '3'
+    var_password_pam_minclass: "3"
   tags:
     - CCE-82045-6
     - DISA-STIG-RHEL-07-010170
@@ -70,20 +70,19 @@
       lineinfile:
         create: true
         dest: /etc/security/pwquality.conf
-        regexp: '^#?\s*minclass'
-        line: 'minclass = {{ var_password_pam_minclass }}'
+        regexp: ^#?\s*minclass
+        line: minclass = {{ var_password_pam_minclass }}
       notify: insights_reboot_handler
   handlers:
     - name: insights_reboot_handler
       set_fact:
         insights_needs_reboot: true
 
-
 # Configure auditd admin_space_left Action on Low Disk Space
 # Identifier: (ssg:rhel7|content_profile_cis|xccdf_org.ssgproject.content_rule_auditd_data_retention_admin_space_left_action,fix)
 # Version: 48db51056597f5613713a8068ac1b4e9bee869d8
 - name: Configure auditd admin_space_left Action on Low Disk Space
-  hosts: 'rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at'
+  hosts: rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at
   become: true
   vars:
     var_auditd_admin_space_left_action: single
@@ -108,7 +107,7 @@
     - name: Configure auditd admin_space_left Action on Low Disk Space
       lineinfile:
         dest: /etc/audit/auditd.conf
-        line: 'admin_space_left_action = {{ var_auditd_admin_space_left_action }}'
+        line: admin_space_left_action = {{ var_auditd_admin_space_left_action }}
         regexp: ^\s*admin_space_left_action\s*=\s*.*$
         state: present
         create: true
@@ -121,12 +120,11 @@
       set_fact:
         insights_needs_reboot: true
 
-
 # Configure auditd max_log_file_action Upon Reaching Maximum Log Size
 # Identifier: (ssg:rhel7|content_profile_cis|xccdf_org.ssgproject.content_rule_auditd_data_retention_max_log_file_action,fix)
 # Version: 48db51056597f5613713a8068ac1b4e9bee869d8
 - name: Configure auditd max_log_file_action Upon Reaching Maximum Log Size
-  hosts: 'rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at'
+  hosts: rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at
   become: true
   vars:
     var_auditd_max_log_file_action: rotate
@@ -148,7 +146,7 @@
     - name: Configure auditd max_log_file_action Upon Reaching Maximum Log Size
       lineinfile:
         dest: /etc/audit/auditd.conf
-        line: 'max_log_file_action = {{ var_auditd_max_log_file_action }}'
+        line: max_log_file_action = {{ var_auditd_max_log_file_action }}
         regexp: ^\s*max_log_file_action\s*=\s*.*$
         state: present
         create: true
@@ -161,12 +159,11 @@
       set_fact:
         insights_needs_reboot: true
 
-
 # Add noexec Option to &#x2F;dev&#x2F;shm
 # Identifier: (ssg:rhel7|content_profile_cis|xccdf_org.ssgproject.content_rule_mount_option_dev_shm_noexec,fix)
 # Version: 48db51056597f5613713a8068ac1b4e9bee869d8
 - name: Add noexec Option to /dev/shm
-  hosts: 'rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at'
+  hosts: rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at
   become: true
   tags:
     - CCE-80153-0
@@ -180,34 +177,33 @@
     - no_reboot_needed
   tasks:
     - name: get back mount information associated to mountpoint
-      command: findmnt --fstab '/dev/shm'
       register: device_name
       failed_when: device_name.rc > 1
       changed_when: false
       when: >-
-        ansible_virtualization_role != "guest" or ansible_virtualization_type !=
-        "docker"
+        ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
       notify: insights_reboot_handler
+      ansible.builtin.command: findmnt --fstab '/dev/shm'
+
     - name: create mount_info dictionary variable
-      set_fact:
-        mount_info: '{{ mount_info|default({})|combine({item.0: item.1}) }}'
       with_together:
-        - '{{ device_name.stdout_lines[0].split() | list | lower }}'
-        - '{{ device_name.stdout_lines[1].split() | list }}'
+        - "{{ device_name.stdout_lines[0].split() | list | lower }}"
+        - "{{ device_name.stdout_lines[1].split() | list }}"
       when:
         - device_name.stdout is defined and device_name.stdout_lines is defined
         - (device_name.stdout | length > 0)
-        - >-
-          ansible_virtualization_role != "guest" or ansible_virtualization_type
-          != "docker"
+        - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
       notify: insights_reboot_handler
+      ansible.builtin.set_fact:
+        mount_info: "{{ mount_info|default({})|combine({item.0: item.1}) }}"
+
     - name: Ensure permission noexec are set on /dev/shm
       mount:
         path: /dev/shm
-        src: '{{ mount_info.source }}'
-        opts: '{{ mount_info.options }},noexec'
+        src: "{{ mount_info.source }}"
+        opts: "{{ mount_info.options }},noexec"
         state: mounted
-        fstype: '{{ mount_info.fstype }}'
+        fstype: "{{ mount_info.fstype }}"
       when:
         - device_name.stdout is defined
         - (device_name.stdout | length > 0)
@@ -220,12 +216,11 @@
       set_fact:
         insights_needs_reboot: true
 
-
 # Add nodev Option to &#x2F;home
 # Identifier: (ssg:rhel7|content_profile_cis|xccdf_org.ssgproject.content_rule_mount_option_home_nodev,fix)
 # Version: 48db51056597f5613713a8068ac1b4e9bee869d8
 - name: Add nodev Option to /home
-  hosts: 'rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at'
+  hosts: rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at
   become: true
   tags:
     - CCE-81047-3
@@ -237,34 +232,33 @@
     - unknown_severity
   tasks:
     - name: get back mount information associated to mountpoint
-      command: findmnt --fstab '/home'
       register: device_name
       failed_when: device_name.rc > 1
       changed_when: false
       when: >-
-        ansible_virtualization_role != "guest" or ansible_virtualization_type !=
-        "docker"
+        ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
       notify: insights_reboot_handler
+      ansible.builtin.command: findmnt --fstab '/home'
+
     - name: create mount_info dictionary variable
-      set_fact:
-        mount_info: '{{ mount_info|default({})|combine({item.0: item.1}) }}'
       with_together:
-        - '{{ device_name.stdout_lines[0].split() | list | lower }}'
-        - '{{ device_name.stdout_lines[1].split() | list }}'
+        - "{{ device_name.stdout_lines[0].split() | list | lower }}"
+        - "{{ device_name.stdout_lines[1].split() | list }}"
       when:
         - device_name.stdout is defined and device_name.stdout_lines is defined
         - (device_name.stdout | length > 0)
-        - >-
-          ansible_virtualization_role != "guest" or ansible_virtualization_type
-          != "docker"
+        - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
       notify: insights_reboot_handler
+      ansible.builtin.set_fact:
+        mount_info: "{{ mount_info|default({})|combine({item.0: item.1}) }}"
+
     - name: Ensure permission nodev are set on /home
       mount:
         path: /home
-        src: '{{ mount_info.source }}'
-        opts: '{{ mount_info.options }},nodev'
+        src: "{{ mount_info.source }}"
+        opts: "{{ mount_info.options }},nodev"
         state: mounted
-        fstype: '{{ mount_info.fstype }}'
+        fstype: "{{ mount_info.fstype }}"
       when:
         - device_name.stdout is defined
         - (device_name.stdout | length > 0)
@@ -277,12 +271,11 @@
       set_fact:
         insights_needs_reboot: true
 
-
 # Add nodev Option to &#x2F;tmp
 # Identifier: (ssg:rhel7|content_profile_cis|xccdf_org.ssgproject.content_rule_mount_option_tmp_nodev,fix)
 # Version: 48db51056597f5613713a8068ac1b4e9bee869d8
 - name: Add nodev Option to /tmp
-  hosts: 'rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at'
+  hosts: rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at
   become: true
   tags:
     - CCE-80149-8
@@ -296,34 +289,33 @@
     - unknown_severity
   tasks:
     - name: get back mount information associated to mountpoint
-      command: findmnt --fstab '/tmp'
       register: device_name
       failed_when: device_name.rc > 1
       changed_when: false
       when: >-
-        ansible_virtualization_role != "guest" or ansible_virtualization_type !=
-        "docker"
+        ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
       notify: insights_reboot_handler
+      ansible.builtin.command: findmnt --fstab '/tmp'
+
     - name: create mount_info dictionary variable
-      set_fact:
-        mount_info: '{{ mount_info|default({})|combine({item.0: item.1}) }}'
       with_together:
-        - '{{ device_name.stdout_lines[0].split() | list | lower }}'
-        - '{{ device_name.stdout_lines[1].split() | list }}'
+        - "{{ device_name.stdout_lines[0].split() | list | lower }}"
+        - "{{ device_name.stdout_lines[1].split() | list }}"
       when:
         - device_name.stdout is defined and device_name.stdout_lines is defined
         - (device_name.stdout | length > 0)
-        - >-
-          ansible_virtualization_role != "guest" or ansible_virtualization_type
-          != "docker"
+        - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
       notify: insights_reboot_handler
+      ansible.builtin.set_fact:
+        mount_info: "{{ mount_info|default({})|combine({item.0: item.1}) }}"
+
     - name: Ensure permission nodev are set on /tmp
       mount:
         path: /tmp
-        src: '{{ mount_info.source }}'
-        opts: '{{ mount_info.options }},nodev'
+        src: "{{ mount_info.source }}"
+        opts: "{{ mount_info.options }},nodev"
         state: mounted
-        fstype: '{{ mount_info.fstype }}'
+        fstype: "{{ mount_info.fstype }}"
       when:
         - device_name.stdout is defined
         - (device_name.stdout | length > 0)
@@ -336,12 +328,11 @@
       set_fact:
         insights_needs_reboot: true
 
-
 # Add noexec Option to &#x2F;tmp
 # Identifier: (ssg:rhel7|content_profile_cis|xccdf_org.ssgproject.content_rule_mount_option_tmp_noexec,fix)
 # Version: 48db51056597f5613713a8068ac1b4e9bee869d8
 - name: Add noexec Option to /tmp
-  hosts: 'rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at'
+  hosts: rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at
   become: true
   tags:
     - CCE-80150-6
@@ -365,10 +356,10 @@
       notify: insights_reboot_handler
     - name: create mount_info dictionary variable
       set_fact:
-        mount_info: '{{ mount_info|default({})|combine({item.0: item.1}) }}'
+        mount_info: "{{ mount_info|default({})|combine({item.0: item.1}) }}"
       with_together:
-        - '{{ device_name.stdout_lines[0].split() | list | lower }}'
-        - '{{ device_name.stdout_lines[1].split() | list }}'
+        - "{{ device_name.stdout_lines[0].split() | list | lower }}"
+        - "{{ device_name.stdout_lines[1].split() | list }}"
       when:
         - device_name.stdout is defined and device_name.stdout_lines is defined
         - (device_name.stdout | length > 0)
@@ -379,10 +370,10 @@
     - name: Ensure permission noexec are set on /tmp
       mount:
         path: /tmp
-        src: '{{ mount_info.source }}'
-        opts: '{{ mount_info.options }},noexec'
+        src: "{{ mount_info.source }}"
+        opts: "{{ mount_info.options }},noexec"
         state: mounted
-        fstype: '{{ mount_info.fstype }}'
+        fstype: "{{ mount_info.fstype }}"
       when:
         - device_name.stdout is defined
         - (device_name.stdout | length > 0)
@@ -395,12 +386,11 @@
       set_fact:
         insights_needs_reboot: true
 
-
 # Add nosuid Option to &#x2F;tmp
 # Identifier: (ssg:rhel7|content_profile_cis|xccdf_org.ssgproject.content_rule_mount_option_tmp_nosuid,fix)
 # Version: 48db51056597f5613713a8068ac1b4e9bee869d8
 - name: Add nosuid Option to /tmp
-  hosts: 'rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at'
+  hosts: rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at
   become: true
   tags:
     - CCE-80151-4
@@ -424,10 +414,10 @@
       notify: insights_reboot_handler
     - name: create mount_info dictionary variable
       set_fact:
-        mount_info: '{{ mount_info|default({})|combine({item.0: item.1}) }}'
+        mount_info: "{{ mount_info|default({})|combine({item.0: item.1}) }}"
       with_together:
-        - '{{ device_name.stdout_lines[0].split() | list | lower }}'
-        - '{{ device_name.stdout_lines[1].split() | list }}'
+        - "{{ device_name.stdout_lines[0].split() | list | lower }}"
+        - "{{ device_name.stdout_lines[1].split() | list }}"
       when:
         - device_name.stdout is defined and device_name.stdout_lines is defined
         - (device_name.stdout | length > 0)
@@ -438,10 +428,10 @@
     - name: Ensure permission nosuid are set on /tmp
       mount:
         path: /tmp
-        src: '{{ mount_info.source }}'
-        opts: '{{ mount_info.options }},nosuid'
+        src: "{{ mount_info.source }}"
+        opts: "{{ mount_info.options }},nosuid"
         state: mounted
-        fstype: '{{ mount_info.fstype }}'
+        fstype: "{{ mount_info.fstype }}"
       when:
         - device_name.stdout is defined
         - (device_name.stdout | length > 0)
@@ -454,12 +444,11 @@
       set_fact:
         insights_needs_reboot: true
 
-
 # Add nodev Option to &#x2F;var&#x2F;tmp
 # Identifier: (ssg:rhel7|content_profile_cis|xccdf_org.ssgproject.content_rule_mount_option_var_tmp_nodev,fix)
 # Version: 48db51056597f5613713a8068ac1b4e9bee869d8
 - name: Add nodev Option to /var/tmp
-  hosts: 'rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at'
+  hosts: rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at
   become: true
   tags:
     - CCE-81052-3
@@ -471,34 +460,33 @@
     - unknown_severity
   tasks:
     - name: get back mount information associated to mountpoint
-      command: findmnt --fstab '/var/tmp'
       register: device_name
       failed_when: device_name.rc > 1
       changed_when: false
       when: >-
-        ansible_virtualization_role != "guest" or ansible_virtualization_type !=
-        "docker"
+        ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
       notify: insights_reboot_handler
+      ansible.builtin.command: findmnt --fstab '/var/tmp'
+
     - name: create mount_info dictionary variable
-      set_fact:
-        mount_info: '{{ mount_info|default({})|combine({item.0: item.1}) }}'
       with_together:
-        - '{{ device_name.stdout_lines[0].split() | list | lower }}'
-        - '{{ device_name.stdout_lines[1].split() | list }}'
+        - "{{ device_name.stdout_lines[0].split() | list | lower }}"
+        - "{{ device_name.stdout_lines[1].split() | list }}"
       when:
         - device_name.stdout is defined and device_name.stdout_lines is defined
         - (device_name.stdout | length > 0)
-        - >-
-          ansible_virtualization_role != "guest" or ansible_virtualization_type
-          != "docker"
+        - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
       notify: insights_reboot_handler
+      ansible.builtin.set_fact:
+        mount_info: "{{ mount_info|default({})|combine({item.0: item.1}) }}"
+
     - name: Ensure permission nodev are set on /var/tmp
       mount:
         path: /var/tmp
-        src: '{{ mount_info.source }}'
-        opts: '{{ mount_info.options }},nodev'
+        src: "{{ mount_info.source }}"
+        opts: "{{ mount_info.options }},nodev"
         state: mounted
-        fstype: '{{ mount_info.fstype }}'
+        fstype: "{{ mount_info.fstype }}"
       when:
         - device_name.stdout is defined
         - (device_name.stdout | length > 0)
@@ -511,12 +499,11 @@
       set_fact:
         insights_needs_reboot: true
 
-
 # Add noexec Option to &#x2F;var&#x2F;tmp
 # Identifier: (ssg:rhel7|content_profile_cis|xccdf_org.ssgproject.content_rule_mount_option_var_tmp_noexec,fix)
 # Version: 48db51056597f5613713a8068ac1b4e9bee869d8
 - name: Add noexec Option to /var/tmp
-  hosts: 'rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at'
+  hosts: rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at
   become: true
   tags:
     - CCE-82150-4
@@ -538,10 +525,10 @@
       notify: insights_reboot_handler
     - name: create mount_info dictionary variable
       set_fact:
-        mount_info: '{{ mount_info|default({})|combine({item.0: item.1}) }}'
+        mount_info: "{{ mount_info|default({})|combine({item.0: item.1}) }}"
       with_together:
-        - '{{ device_name.stdout_lines[0].split() | list | lower }}'
-        - '{{ device_name.stdout_lines[1].split() | list }}'
+        - "{{ device_name.stdout_lines[0].split() | list | lower }}"
+        - "{{ device_name.stdout_lines[1].split() | list }}"
       when:
         - device_name.stdout is defined and device_name.stdout_lines is defined
         - (device_name.stdout | length > 0)
@@ -552,10 +539,10 @@
     - name: Ensure permission noexec are set on /var/tmp
       mount:
         path: /var/tmp
-        src: '{{ mount_info.source }}'
-        opts: '{{ mount_info.options }},noexec'
+        src: "{{ mount_info.source }}"
+        opts: "{{ mount_info.options }},noexec"
         state: mounted
-        fstype: '{{ mount_info.fstype }}'
+        fstype: "{{ mount_info.fstype }}"
       when:
         - device_name.stdout is defined
         - (device_name.stdout | length > 0)
@@ -568,12 +555,11 @@
       set_fact:
         insights_needs_reboot: true
 
-
 # Add nosuid Option to &#x2F;var&#x2F;tmp
 # Identifier: (ssg:rhel7|content_profile_cis|xccdf_org.ssgproject.content_rule_mount_option_var_tmp_nosuid,fix)
 # Version: 48db51056597f5613713a8068ac1b4e9bee869d8
 - name: Add nosuid Option to /var/tmp
-  hosts: 'rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at'
+  hosts: rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at
   become: true
   tags:
     - CCE-82153-8
@@ -595,10 +581,10 @@
       notify: insights_reboot_handler
     - name: create mount_info dictionary variable
       set_fact:
-        mount_info: '{{ mount_info|default({})|combine({item.0: item.1}) }}'
+        mount_info: "{{ mount_info|default({})|combine({item.0: item.1}) }}"
       with_together:
-        - '{{ device_name.stdout_lines[0].split() | list | lower }}'
-        - '{{ device_name.stdout_lines[1].split() | list }}'
+        - "{{ device_name.stdout_lines[0].split() | list | lower }}"
+        - "{{ device_name.stdout_lines[1].split() | list }}"
       when:
         - device_name.stdout is defined and device_name.stdout_lines is defined
         - (device_name.stdout | length > 0)
@@ -609,10 +595,10 @@
     - name: Ensure permission nosuid are set on /var/tmp
       mount:
         path: /var/tmp
-        src: '{{ mount_info.source }}'
-        opts: '{{ mount_info.options }},nosuid'
+        src: "{{ mount_info.source }}"
+        opts: "{{ mount_info.options }},nosuid"
         state: mounted
-        fstype: '{{ mount_info.fstype }}'
+        fstype: "{{ mount_info.fstype }}"
       when:
         - device_name.stdout is defined
         - (device_name.stdout | length > 0)
@@ -625,12 +611,11 @@
       set_fact:
         insights_needs_reboot: true
 
-
 # Verify and Correct File Permissions with RPM
 # Identifier: (ssg:rhel7|content_profile_cis|xccdf_org.ssgproject.content_rule_rpm_verify_permissions,fix)
 # Version: 48db51056597f5613713a8068ac1b4e9bee869d8
 - name: Verify and Correct File Permissions with RPM
-  hosts: 'rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at'
+  hosts: rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at
   become: true
   tags:
     - CCE-27209-6
@@ -652,29 +637,30 @@
     - rpm_verify_permissions
   tasks:
     - name: Read list of files with incorrect permissions
-      command: >-
-        rpm -Va --nodeps --nosignature --nofiledigest --nosize --nomtime
-        --nordev --nocaps --nolinkto --nouser --nogroup
       args:
         warn: false
       register: files_with_incorrect_permissions
       failed_when: files_with_incorrect_permissions.rc > 1
       changed_when: false
       notify: insights_reboot_handler
+      ansible.builtin.command: >-
+        rpm -Va --nodeps --nosignature --nofiledigest --nosize --nomtime
+        --nordev --nocaps --nolinkto --nouser --nogroup
+
     - name: Create list of packages
-      command: 'rpm -qf "{{ item }}"'
       args:
         warn: false
       with_items: >-
-        {{ files_with_incorrect_permissions.stdout_lines | map('regex_findall',
-        '^[.]+[M]+.* (\/.*)', '\1') | map('join') | select('match', '(\/.*)') |
-        list | unique }}
+        {{ files_with_incorrect_permissions.stdout_lines | map('regex_findall', '^[.]+[M]+.* (\/.*)', '\1') | map('join') | select('match', '(\/.*)') | list | unique
+        }}
       register: list_of_packages
       changed_when: false
       when: (files_with_incorrect_permissions.stdout_lines | length > 0)
       notify: insights_reboot_handler
+      ansible.builtin.command: rpm -qf "{{ item }}"
+
     - name: Correct file permissions with RPM
-      command: 'rpm --setperms ''{{ item }}'''
+      command: rpm --setperms '{{ item }}'
       args:
         warn: false
       with_items: >-
@@ -687,12 +673,11 @@
       set_fact:
         insights_needs_reboot: true
 
-
 # Disable Red Hat Network Service (rhnsd)
 # Identifier: (ssg:rhel7|content_profile_cis|xccdf_org.ssgproject.content_rule_service_rhnsd_disabled,fix)
 # Version: 48db51056597f5613713a8068ac1b4e9bee869d8
 - name: Disable Red Hat Network Service (rhnsd)
-  hosts: 'rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at'
+  hosts: rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at
   become: true
   tags:
     - CCE-80269-4
@@ -706,41 +691,40 @@
     - unknown_severity
   tasks:
     - name: Unit Service Exists - rhnsd.service
-      command: systemctl list-unit-files rhnsd.service
       register: service_file_exists
       changed_when: false
       ignore_errors: true
       when: >-
-        ansible_virtualization_role != "guest" or ansible_virtualization_type !=
-        "docker"
+        ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
       notify: insights_reboot_handler
+      ansible.builtin.command: systemctl list-unit-files rhnsd.service
+
     - name: Disable service rhnsd
-      systemd:
-        name: rhnsd.service
-        enabled: 'no'
-        state: stopped
-        masked: 'yes'
       when:
         - '"rhnsd.service" in service_file_exists.stdout_lines[1]'
-        - >-
-          ansible_virtualization_role != "guest" or ansible_virtualization_type
-          != "docker"
+        - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
       notify: insights_reboot_handler
+      ansible.builtin.systemd:
+        name: rhnsd.service
+        enabled: false
+        state: stopped
+        masked: true
+
     - name: Unit Socket Exists - rhnsd.socket
-      command: systemctl list-unit-files rhnsd.socket
       register: socket_file_exists
       changed_when: false
       ignore_errors: true
       when: >-
-        ansible_virtualization_role != "guest" or ansible_virtualization_type !=
-        "docker"
+        ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
       notify: insights_reboot_handler
+      ansible.builtin.command: systemctl list-unit-files rhnsd.socket
+
     - name: Disable socket rhnsd
       systemd:
         name: rhnsd.socket
-        enabled: 'no'
+        enabled: "no"
         state: stopped
-        masked: 'yes'
+        masked: "yes"
       when:
         - '"rhnsd.socket" in socket_file_exists.stdout_lines[1]'
         - >-
@@ -752,12 +736,11 @@
       set_fact:
         insights_needs_reboot: true
 
-
 # Do Not Allow SSH Environment Options
 # Identifier: (ssg:rhel7|content_profile_cis|xccdf_org.ssgproject.content_rule_sshd_do_not_permit_user_env,fix)
 # Version: 48db51056597f5613713a8068ac1b4e9bee869d8
 - name: Do Not Allow SSH Environment Options
-  hosts: 'rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at'
+  hosts: rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at
   become: true
   tags:
     - CCE-27363-1
@@ -777,19 +760,20 @@
     - name: Do Not Allow SSH Environment Options
       block:
         - name: Deduplicate values from /etc/ssh/sshd_config
-          lineinfile:
+          notify: insights_reboot_handler
+          ansible.builtin.lineinfile:
             path: /etc/ssh/sshd_config
             create: false
             regexp: (?i)^\s*PermitUserEnvironment\s+
             state: absent
-          notify: insights_reboot_handler
+
         - name: Insert correct line to /etc/ssh/sshd_config
           lineinfile:
             path: /etc/ssh/sshd_config
             create: true
             line: PermitUserEnvironment yes
             state: present
-            insertbefore: '^[#\s]*Match'
+            insertbefore: ^[#\s]*Match
             validate: /usr/sbin/sshd -t -f %s
           notify: insights_reboot_handler
       when: >-
@@ -800,28 +784,28 @@
       set_fact:
         insights_needs_reboot: true
 
-
 # Reboots a system if any of the preceeding plays sets the 'insights_needs_reboot' variable to true.
 # The variable can be overridden to suppress this behavior.
 - name: Reboot system (if applicable)
-  hosts: "rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at"
-  become: True
-  gather_facts: False
+  hosts: rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at
+  become: true
+  gather_facts: false
   tasks:
     - when:
         - insights_needs_reboot is defined
         - insights_needs_reboot
       block:
         - name: Reboot system
-          shell: sleep 2 && shutdown -r now "Ansible triggered reboot"
           async: 1
           poll: 0
           ignore_errors: true
+          ansible.builtin.shell: sleep 2 && shutdown -r now "Ansible triggered reboot"
 
         - name: Wait for system to boot up
           local_action:
-            module: wait_for
-            host: "{{ hostvars[inventory_hostname]['ansible_host'] | default(hostvars[inventory_hostname]['ansible_ssh_host'], true) | default(inventory_hostname, true) }}"
+            module: ansible.builtin.wait_for
+            host: "{{ hostvars[inventory_hostname]['ansible_host'] | default(hostvars[inventory_hostname]['ansible_ssh_host'], true) | default(inventory_hostname,
+              true) }}"
             port: "{{ hostvars[inventory_hostname]['ansible_port'] | default(hostvars[inventory_hostname]['ansible_ssh_port'], true) | default('22', true) }}"
             delay: 15
             search_regex: OpenSSH
@@ -829,10 +813,10 @@
           become: false
 
 - name: run insights
-  hosts: "rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at"
-  become: True
-  gather_facts: False
+  hosts: rhel-kvegh-nt53-711.kveghdemo.at,rhel-kvegh-nt53-741.kveghdemo.at,rhel-kvegh-nt53-801.kveghdemo.at
+  become: true
+  gather_facts: false
   tasks:
     - name: run insights
-      command: insights-client
       changed_when: false
+      ansible.builtin.command: insights-client

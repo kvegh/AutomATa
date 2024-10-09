@@ -1,72 +1,72 @@
 ---
-- name: move from DHCP to desired fix IP 
-  hosts: all 
-  
-  tasks: 
-  - name: setup hosts file entries
-    lineinfile:
-      path: /etc/hosts
-      line: "{{ item }}"
-    with_items: 
-      - "192.168.122.120 tower ansible-h"
-      - "192.168.122.130 satellite satellite-h"
-      - "192.168.122.140 zabbix zabbix-h"
-      - "192.168.122.150 f5 f5-h"
-      - "88.99.250.153 hetzner"
+- name: move from DHCP to desired fix IP
+  hosts: all
 
-  # OMG, just use templates please... will probably not happen. 
-  - name: limit dhcp range of hosts in libvirtd 
-    shell: virsh net-dumpxml default > dump254 && sed -i s/end=\'192.168.122.254\'/end=\'192.168.122.99\'/ dump254 && virsh net-define --file dump254 
+  tasks:
+    - name: setup hosts file entries
+      with_items:
+        - 192.168.122.120 tower ansible-h
+        - 192.168.122.130 satellite satellite-h
+        - 192.168.122.140 zabbix zabbix-h
+        - 192.168.122.150 f5 f5-h
+        - 88.99.250.153 hetzner
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ item }}"
 
-  - name: copy new production network data to hypervisor
-    copy: 
-      src: configs/prod_dump254
-      dest: /home/ansible
+    - name: limit dhcp range of hosts in libvirtd
+      ansible.builtin.shell: virsh net-dumpxml default > dump254 && sed -i s/end=\'192.168.122.254\'/end=\'192.168.122.99\'/ dump254 && virsh net-define --file dump254
 
-#  - name: define new production network 
-#    virt_net: 
-#      command: define
-#      name: production
-#      xml: /home/ansible/prod_dump254
+    - name: copy new production network data to hypervisor
+      ansible.builtin.copy:
+        src: configs/prod_dump254
+        dest: /home/ansible
 
-  # cannot parse XML start tag abov via virt_net? from a dumpxml file? gah. Another command command.
-  - name: define new production network via command
-    command: virsh net-define --file prod_dump254
-     
-  - name: start new production network 
-    virt_net: 
-      command: create
-      name: production
+    #  - name: define new production network 
+    #    virt_net: 
+    #      command: define
+    #      name: production
+    #      xml: /home/ansible/prod_dump254
 
-  - name: activate new production network 
-    virt_net: 
-      name: production
-      state: active
+    # cannot parse XML start tag abov via virt_net? from a dumpxml file? gah. Another command command.
 
-#   # OMG #2 
-#   - name: limit dhcp range of hosts in libvirtd 
-#     shell: virsh net-dumpxml production > prod_dump254 && sed -i s/end=\'192.168.122.254\'/end=\'192.168.122.99\'/ prod_dump254 && virsh net-define --file prod_dump254 
+    - name: define new production network via command
+      ansible.builtin.command: virsh net-define --file prod_dump254
 
-  - name: shutdown VMs, get a clean reboot
-    virt: 
-      name: "{{ item }}"
-      state: shutdown
-    with_items: 
+    - name: start new production network
+      community.libvirt.virt_net:
+        command: create
+        name: production
+
+    - name: activate new production network
+      community.libvirt.virt_net:
+        name: production
+        state: active
+
+    #   # OMG #2 
+    #   - name: limit dhcp range of hosts in libvirtd 
+    #     shell: virsh net-dumpxml production > prod_dump254 && sed -i s/end=\'192.168.122.254\'/end=\'192.168.122.99\'/ prod_dump254 && virsh net-define --file prod_dump254 
+
+    - name: shutdown VMs, get a clean reboot
+      with_items:
         - ansible-h
         - satellite-h
+      community.libvirt.virt:
+        name: "{{ item }}"
+        state: shutdown
 
-  - name: give the VMs 30s to shut down 
-    pause: 
-      seconds: 30
+    - name: give the VMs 30s to shut down
+      ansible.builtin.pause:
+        seconds: 30
 
-  - name: reboot hetzner
-    reboot: 
-      msg: Rebooted by Ansible to finalize/test network config change
+    - name: reboot hetzner
+      ansible.builtin.reboot:
+        msg: Rebooted by Ansible to finalize/test network config change
 
-  - name: start VMs
-    virt: 
-      name: "{{ item }}"
-      state: running
-    with_items: 
+    - name: start VMs
+      with_items:
         - ansible-h
         - satellite-h
+      community.libvirt.virt:
+        name: "{{ item }}"
+        state: running

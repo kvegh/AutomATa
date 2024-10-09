@@ -1,47 +1,47 @@
 ---
 - name: webserver setup
-  user: ansible 
+  user: ansible
   hosts: all
 
   tasks:
     - name: install webserver pkg
-      yum:
+      ansible.builtin.yum:
         name: httpd
         state: present
 
     - name: ensure firewalld and its python module is installed
-      yum:
+      when: ansible_distribution_major_version == "7"
+      ansible.builtin.yum:
         name:
-          - firewalld 
+          - firewalld
           - python-firewall
         state: present
-      when: ansible_distribution_major_version == "7"
 
     - name: ensure firewalld and its python module is installed
-      yum:
+      when: ansible_distribution_major_version == "8"
+      ansible.builtin.yum:
         name:
-          - firewalld 
+          - firewalld
           - python3-firewall
         state: present
-      when: ansible_distribution_major_version == "8"
 
     - name: enable webserver
-      systemd:
+      ansible.builtin.systemd:
         name: httpd
-        enabled: yes
+        enabled: true
 
     - name: start webserver
-      systemd:
+      ansible.builtin.systemd:
         name: httpd
         state: started
 
     - name: Open port 80
-      firewalld: 
-        service: http 
-        permanent: true 
+      ansible.posix.firewalld:
+        service: http
+        permanent: true
         state: enabled
 
     - name: start the firewalld service
-      systemd:
+      ansible.builtin.systemd:
         name: firewalld
         state: restarted

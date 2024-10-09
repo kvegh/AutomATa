@@ -1,26 +1,25 @@
 ---
-- name: pull up the Sat-Capsule SSH tunnel 
+- name: pull up the Sat-Capsule SSH tunnel
   hosts: sat65-h,sat-capsule,jumphost
 
-  tasks: 
-  - name: ensure the Azure VMs are running 
-    azure_rm_virtualmachine:
-      name: "{{ item }}"
-      resource_group: costop
-      state: present
+  tasks:
+    - name: ensure the Azure VMs are running
+      delegate_to: localhost
+      loop:
+        - jumphost
+        - sat-capsule
+      azure.azcollection.azure_rm_virtualmachine:
+        name: "{{ item }}"
+        resource_group: costop
+        state: present
     # when: "{{ inventory_hostname }}" == "localhost"
-    delegate_to: localhost
-    loop: 
-      - jumphost
-      - sat-capsule
 
-  - name: pull up the ssh -w tunnel  
-    become: yes
-    shell: screen -d -m /root/azuretunnel.sh
-    when: inventory_hostname == "sat65-h"
-    
+    - name: pull up the ssh -w tunnel
+      become: true
+      when: inventory_hostname == "sat65-h"
 
-#  - name: 
-# - name: pull ssh -w 
-#   shell: ssh 
-#  become: yes
+      #  - name: 
+      # - name: pull ssh -w 
+      #   shell: ssh 
+      #  become: yes
+      ansible.builtin.shell: screen -d -m /root/azuretunnel.sh

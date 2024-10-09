@@ -4,5 +4,4 @@
 
   tasks:
     - name: shutdown
-      win_command: shutdown /s
-
+      ansible.windows.win_command: shutdown /s

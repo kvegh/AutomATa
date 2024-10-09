@@ -11,10 +11,10 @@
 # Created by kvegh@redhat.com
 
 - name: run insights to obtain latest diagnosis info
-  hosts: "rhel-kvegh-linuxday23-741.kveghdemo.at"
+  hosts: rhel-kvegh-linuxday23-741.kveghdemo.at
   vars:
     insights_remediation: " cb1c9856-7e1c-4805-9f85-110082ad63fa"
-    insights_signature_exclude: "/hosts,/vars/insights_signature,/vars/insights_remediation"
+    insights_signature_exclude: /hosts,/vars/insights_signature,/vars/insights_remediation
     insights_signature: !!binary |
       TFMwdExTMUNSVWRKVGlCUVIxQWdVMGxIVGtGVVZWSkZMUzB0TFMwS1ZtVnljMmx2YmpvZ1IyNTFV
       RWNnZGpFS0NtbFJTVlpCZDFWQldVaHBRblZqZG5jMU9FUXJhalZ3VGtGUmFtRkdVa0ZCYTBSVWNu
@@ -39,19 +39,19 @@
   become: true
   tasks:
     - name: obtain diagnosis info
-      command: "insights-client --diagnosis{{ insights_remediation | regex_search('\\s[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}') }}"
       register: insights_result
       changed_when: false
       check_mode: false
-    - name: register insights report as fact for use by other plays
-      set_fact: insights_report={{ insights_result.stdout }}
+      ansible.builtin.command: insights-client --diagnosis{{ insights_remediation | regex_search('\s[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}')
+        }}
 
-# Decreased security: OpenSSH ClientAlive settings
-# Identifier: (advisor:hardening_ssh_client_alive|OPENSSH_HARDENING_CLIENT_ALIVE,fix)
-# Version: 9788a2d4ce207e3a7d0208e1627e79969b1f052f
+    - name: register insights report as fact for use by other plays
+      ansible.builtin.set_fact:
+        insights_report: "{{ insights_result.stdout }}"
+
 - name: Set ClientMaxAlive and ClientAliveInterval. Restart sshd service.
-  hosts: "rhel-kvegh-linuxday23-741.kveghdemo.at"
-  become: yes
+  hosts: rhel-kvegh-linuxday23-741.kveghdemo.at
+  become: true
   vars:
     insights_signature_exclude: /hosts,/vars/insights_signature
     insights_signature: !!binary |
@@ -77,30 +77,30 @@
       PQ==
   tasks:
     - name: Update ClientAliveInterval setting
-      lineinfile:
+      ansible.builtin.lineinfile:
         dest: /etc/ssh/sshd_config
-        backup: yes
-        regexp: '(?i)^\s*ClientAliveInterval\s+[0-9]+'
-        line: 'ClientAliveInterval 300'
+        backup: true
+        regexp: (?i)^\s*ClientAliveInterval\s+[0-9]+
+        line: ClientAliveInterval 300
 
     - name: Update ClientMaxAlive setting
-      lineinfile:
+      ansible.builtin.lineinfile:
         dest: /etc/ssh/sshd_config
-        backup: yes
-        regexp: '(?i)^\s*ClientAliveCountMax\s+[0-9]+'
-        line: 'ClientAliveCountMax 0'
+        backup: true
+        regexp: (?i)^\s*ClientAliveCountMax\s+[0-9]+
+        line: ClientAliveCountMax 0
 
     - name: restart sshd service
-      service:
+      ansible.builtin.service:
         name: sshd
         state: restarted
-
 
 # Decreased system performance occurs when not running the irqbalance service
 # Identifier: (advisor:irqbalance_not_running|IRQBALANCE_NOT_RUNNING_OR_ENABLED_V2,fix)
 # Version: 0e74f456ae0c9066bbcc5e39ea2ced90af6a5fd2
+
 - name: Install, enable, start the irqbalance service
-  hosts: "rhel-kvegh-linuxday23-741.kveghdemo.at"
+  hosts: rhel-kvegh-linuxday23-741.kveghdemo.at
   become: true
   vars:
     pydata: "{{ insights_report.details['irqbalance_not_running|IRQBALANCE_NOT_RUNNING_OR_ENABLED_V2'] | default('') }}"
@@ -131,29 +131,29 @@
     - when: pydata != ''
       block:
         - name: Install the irqbalance package
-          yum:
+          when: pydata.irqbalance_installed is defined and not pydata.irqbalance_installed
+          ansible.builtin.yum:
             name: irqbalance
             state: latest
-          when: pydata.irqbalance_installed is defined and not pydata.irqbalance_installed
 
         - name: Enable the irqbalance service
-          service:
-            name: irqbalance
-            enabled: yes
           when: pydata.irqbalance_enabled is defined and not pydata.irqbalance_enabled
+          ansible.builtin.service:
+            name: irqbalance
+            enabled: true
 
         - name: Start the irqbalance service
-          service:
-            name: irqbalance
-            state: started
           when: pydata.irqbalance_running is defined and not pydata.irqbalance_running
 
+          # Kernel panic occurs when a network interface with an IPv6 local route is unregistered
+          # Identifier: (advisor:network_device_unregister_issue|NETWORK_DEVICE_UNREGISTER_ISSUE,package_update)
+          # Version: 31c306a860e17c53dda94991adb03a293b6dc052
+          ansible.builtin.service:
+            name: irqbalance
+            state: started
 
-# Kernel panic occurs when a network interface with an IPv6 local route is unregistered
-# Identifier: (advisor:network_device_unregister_issue|NETWORK_DEVICE_UNREGISTER_ISSUE,package_update)
-# Version: 31c306a860e17c53dda94991adb03a293b6dc052
 - name: Update the package kernel
-  hosts: "rhel-kvegh-linuxday23-741.kveghdemo.at"
+  hosts: rhel-kvegh-linuxday23-741.kveghdemo.at
   become: true
   vars:
     kernel_pkg: "{{ 'kernel-rt' if 'rt' in ansible_kernel else 'kernel' }}"
@@ -230,19 +230,19 @@
                 - name: get latest installed {{ kernel_pkg }} package version
                   shell: rpm -q {{ kernel_pkg }} --queryformat="%{buildtime}\t%{version}-%{release}.%{arch}\n" | sort -nr | head -1 | cut -f2
                   register: latest_kernel
-                  check_mode: no
+                  check_mode: false
 
                 - name: get configured default kernel
                   command: /sbin/grubby --default-kernel
                   register: default_kernel
-                  check_mode: no
+                  check_mode: false
                   changed_when: false
 
                 - when: default_kernel.stdout.split('-', 1)[1] != latest_kernel.stdout
                   name: set the default kernel to the latest installed
                   command: /sbin/grubby --set-default /boot/vmlinuz-{{ latest_kernel.stdout }}
                   register: grub_change
-                  check_mode: no
+                  check_mode: false
                   changed_when: grub_change.rc == 0
 
                 - when: grub_change is changed
@@ -250,12 +250,11 @@
                   set_fact:
                     insights_needs_reboot: true
 
-
 # Kernel panic occurs when ip6_route_dev_notify function receives an empty pointer from snmp6_alloc_dev while unregistering IPv6 enabled network device due to a known bug in the kernel
 # Identifier: (advisor:network_ipv6_dev_route_crash|NETWORK_IPV6_DEV_ROUTE_CRASH,kernel_update)
 # Version: 88d3721bac44b2a2e88cb6e470364af46a2b22d3
 - name: Update the package kernel
-  hosts: "rhel-kvegh-linuxday23-741.kveghdemo.at"
+  hosts: rhel-kvegh-linuxday23-741.kveghdemo.at
   become: true
   vars:
     kernel_pkg: "{{ 'kernel-rt' if 'rt' in ansible_kernel else 'kernel' }}"
@@ -330,19 +329,19 @@
             - name: get latest installed {{ kernel_pkg }} package version
               shell: rpm -q {{ kernel_pkg }} --queryformat="%{buildtime}\t%{version}-%{release}.%{arch}\n" | sort -nr | head -1 | cut -f2
               register: latest_kernel
-              check_mode: no
+              check_mode: false
 
             - name: get configured default kernel
               command: /sbin/grubby --default-kernel
               register: default_kernel
-              check_mode: no
+              check_mode: false
               changed_when: false
 
             - when: default_kernel.stdout.split('-', 1)[1] != latest_kernel.stdout
               name: set the default kernel to the latest installed
               command: /sbin/grubby --set-default /boot/vmlinuz-{{ latest_kernel.stdout }}
               register: grub_change
-              check_mode: no
+              check_mode: false
               changed_when: grub_change.rc == 0
 
             - when: grub_change is changed
@@ -350,12 +349,11 @@
               set_fact:
                 insights_needs_reboot: true
 
-
 # Code injection risk or wrong pid altering when rhnsd daemon file rhnsd.pid is world writable, due to a bug in rhnsd
 # Identifier: (advisor:rhnsd_pid_world_write|RHNSD_PID_WORLD_WRITABLE,fix)
 # Version: 1a2bb5b8af14dcc80f3c261658d115ea7fe22272
 - name: Update rhnsd package
-  hosts: "rhel-kvegh-linuxday23-741.kveghdemo.at"
+  hosts: rhel-kvegh-linuxday23-741.kveghdemo.at
   become: true
 
   vars:
@@ -384,18 +382,17 @@
   tasks:
     - when: ansible_distribution_major_version == '7'
       block:
-
         - name: Update rhnsd package
-          yum:
+          ansible.builtin.yum:
             name:
               - rhnsd
             state: latest
 
-
 # Reboots a system if any of the preceeding plays sets the 'insights_needs_reboot' variable to true.
 # The variable can be overridden to suppress this behavior.
+
 - name: Reboot system (if applicable)
-  hosts: "rhel-kvegh-linuxday23-741.kveghdemo.at"
+  hosts: rhel-kvegh-linuxday23-741.kveghdemo.at
   become: true
   gather_facts: false
   vars:
@@ -427,15 +424,16 @@
         - insights_needs_reboot
       block:
         - name: Reboot system
-          shell: sleep 2 && shutdown -r now "Ansible triggered reboot"
           async: 1
           poll: 0
           ignore_errors: true
+          ansible.builtin.shell: sleep 2 && shutdown -r now "Ansible triggered reboot"
 
         - name: Wait for system to boot up
           local_action:
-            module: wait_for
-            host: "{{ hostvars[inventory_hostname]['ansible_host'] | default(hostvars[inventory_hostname]['ansible_ssh_host'], true) | default(inventory_hostname, true) }}"
+            module: ansible.builtin.wait_for
+            host: "{{ hostvars[inventory_hostname]['ansible_host'] | default(hostvars[inventory_hostname]['ansible_ssh_host'], true) | default(inventory_hostname,
+              true) }}"
             port: "{{ hostvars[inventory_hostname]['ansible_port'] | default(hostvars[inventory_hostname]['ansible_ssh_port'], true) | default('22', true) }}"
             delay: 15
             search_regex: OpenSSH
@@ -443,7 +441,7 @@
           become: false
 
 - name: run insights
-  hosts: "rhel-kvegh-linuxday23-741.kveghdemo.at"
+  hosts: rhel-kvegh-linuxday23-741.kveghdemo.at
   become: true
   gather_facts: false
   vars:
@@ -471,5 +469,5 @@
       PQ==
   tasks:
     - name: run insights
-      command: insights-client
       changed_when: false
+      ansible.builtin.command: insights-client

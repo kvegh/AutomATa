@@ -1,42 +1,40 @@
 ---
-- name: set up users and dirs 
+- name: set up users and dirs
   hosts: all
   vars_files:
-  - extravars/userlist.yml
+    - extravars/userlist.yml
 
-  tasks: 
-  - name: ensure list of users are set up
-    group: 
-      name: "{{ item }}"
-      state: present
-    loop: 
-      - hitchhikers
-      - betelgeusians
-      - aliens
-      - humans
-      - brits
-      - presidents
+  tasks:
+    - name: ensure list of users are set up
+      loop:
+        - hitchhikers
+        - betelgeusians
+        - aliens
+        - humans
+        - brits
+        - presidents
+      ansible.builtin.group:
+        name: "{{ item }}"
+        state: present
 
-  - name: ensure list of users are set up
-    user: 
-      name: "{{ item.username }}" 
-      generate_ssh_key: yes
-      group: "{{ item.group }}"
-      groups: "{{ item.groups }}" 
-      create_home: yes
-      state: present
-    loop: "{{ userlist }}" 
+    - name: ensure list of users are set up
+      loop: "{{ userlist }}"
+      ansible.builtin.user:
+        name: "{{ item.username }}"
+        generate_ssh_key: true
+        group: "{{ item.group }}"
+        groups: "{{ item.groups }}"
+        create_home: true
+        state: present
 
-  - name: set up required directory structure 
-    file: 
-      state: directory
-      name: "{{ item }}"
-      owner: root
-      group: hitchhikers
-      mode: '0774'
-    loop: 
-      - /opt/data/maindir
-      - /opt/data/maindir/A
-      - /opt/data/maindir/B
-
-
+    - name: set up required directory structure
+      loop:
+        - /opt/data/maindir
+        - /opt/data/maindir/A
+        - /opt/data/maindir/B
+      ansible.builtin.file:
+        state: directory
+        name: "{{ item }}"
+        owner: root
+        group: hitchhikers
+        mode: "0774"

@@ -5,15 +5,14 @@
     - redhat.insights
 
   tasks:
-    - include_role: 
+    - when: ansible_os_family == 'RedHat'
+      ansible.builtin.include_role:
         name: redhat.insights.insights_client
-      when: ansible_os_family == 'RedHat'
 
     - name: install compliance required packages (openscap)
-      package: 
+      ansible.builtin.package:
         state: latest
-        name: 
+        name:
           - scap-security-guide
           - openscap-scanner
           - openscap
-

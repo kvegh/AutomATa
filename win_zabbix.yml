@@ -1,8 +1,8 @@
 ---
 - hosts: win_vms
-#  remote_user: Administrator
+  #  remote_user: Administrator
   vars:
-    - zabbix_server_ip: '192.168.122.120'
+    - zabbix_server_ip: 192.168.122.120
 
   roles:
     - { role: qwsj.win-zabbix-agent }
@@ -10,7 +10,7 @@
   tasks:
     - name: Create a new host or update an existing host's info
       local_action:
-        module: zabbix_host
+        module: community.zabbix.zabbix_host
         server_url: http://zabbix/zabbix
         login_user: Admin
         login_password: zabbix
@@ -27,9 +27,8 @@
           - Template OS Windows
         status: enabled
         state: present
-        interfaces: 
+        interfaces:
           - type: agent
             main: 1
             dns: "{{ inventory_hostname }}"
             ip: "{{ ansible_host }}"
-
