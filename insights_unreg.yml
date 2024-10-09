@@ -1,10 +1,10 @@
 ---
-- name: drop specific hosts from insights registration 
+- name: drop specific hosts from insights registration
   vars:
-    project_name: "changeme"
-  hosts: rhel_vms 
+    project_name: changeme
+  hosts: rhel_vms
 
-  tasks: 
-  - name: unregister hosts
-    redhat.insights.insights_register: 
-      state: absent
+  tasks:
+    - name: unregister hosts
+      redhatinsights.insights.insights_register:
+        state: absent

@@ -1,64 +1,65 @@
+---
 - name: create Azure VM
   hosts: localhost
-  vars_files: 
-#    - /home/ansible/secvar/azure_cred.yml
-   - /home/ansible/secvar/ssh_keys.yml
+  vars_files:
+    #    - /home/ansible/secvar/azure_cred.yml
+    - /home/ansible/secvar/ssh_keys.yml
 
-  tasks: 
-#  - name: setup real clients
-#    azure_rm_virtualmachine:
-#      resource_group: "{{ resourcegroup_name }}"
-#      name: "{{ vm_hostname }}-rhel8.1-{{ item }}"
-#      vm_size: Standard_A2
-#      admin_username: ansible
-#      ssh_password_enabled: false
-#      ssh_public_keys: 
-#      - path: /home/ansible/.ssh/authorized_keys
-#        key_data: "{{ automata_sshkey }}"
-#      image:
-#        publisher: RedHat
-#        offer: RHEL
-#        sku: 8.1
-#        version: 8.1.2020020415
-#      public_ip_allocation_method: Disabled
-#    loop: "{{ range(0, 1)|list }}" 
-   
-  - name: setup real clients
-    azure_rm_virtualmachine:
-      resource_group: "{{ resourcegroup_name }}"
-      name: "{{ vm_hostname }}-rhel8.0-{{ item }}"
-      vm_size: Standard_A2
-      admin_username: ansible
-      ssh_password_enabled: false
-      ssh_public_keys: 
-      - path: /home/ansible/.ssh/authorized_keys
-        key_data: "{{ automata_sshkey }}"
-      image:
-        publisher: RedHat
-        offer: RHEL
-        sku: 8
-        version: 8.0.2019050711
-      public_ip_allocation_method: Disabled
-    loop: "{{ range(0, 1)|list }}" 
-   
-  - name: setup real clients
-    azure_rm_virtualmachine:
-      resource_group: "{{ resourcegroup_name }}"
-      name: "{{ vm_hostname }}-rhel7.7.0-{{ item }}"
-      vm_size: Standard_A2
-      admin_username: ansible
-      ssh_password_enabled: false
-      ssh_public_keys: 
-      - path: /home/ansible/.ssh/authorized_keys
-        key_data: "{{ automata_sshkey }}"
-      image:
-        publisher: RedHat
-        offer: RHEL
-        sku: 7.7
-        version: 7.7.2019090316
-      public_ip_allocation_method: Disabled
-    loop: "{{ range(0, 1)|list }}" 
-  
+  tasks:
+    #  - name: setup real clients
+    #    azure_rm_virtualmachine:
+    #      resource_group: "{{ resourcegroup_name }}"
+    #      name: "{{ vm_hostname }}-rhel8.1-{{ item }}"
+    #      vm_size: Standard_A2
+    #      admin_username: ansible
+    #      ssh_password_enabled: false
+    #      ssh_public_keys: 
+    #      - path: /home/ansible/.ssh/authorized_keys
+    #        key_data: "{{ automata_sshkey }}"
+    #      image:
+    #        publisher: RedHat
+    #        offer: RHEL
+    #        sku: 8.1
+    #        version: 8.1.2020020415
+    #      public_ip_allocation_method: Disabled
+    #    loop: "{{ range(0, 1)|list }}" 
+
+    - name: setup real clients
+      azure_rm_virtualmachine:
+        resource_group: "{{ resourcegroup_name }}"
+        name: "{{ vm_hostname }}-rhel8.0-{{ item }}"
+        vm_size: Standard_A2
+        admin_username: ansible
+        ssh_password_enabled: false
+        ssh_public_keys:
+          - path: /home/ansible/.ssh/authorized_keys
+            key_data: "{{ automata_sshkey }}"
+        image:
+          publisher: RedHat
+          offer: RHEL
+          sku: 8
+          version: 8.0.2019050711
+        public_ip_allocation_method: Disabled
+      loop: "{{ range(0, 1)|list }}"
+
+    - name: setup real clients
+      azure_rm_virtualmachine:
+        resource_group: "{{ resourcegroup_name }}"
+        name: "{{ vm_hostname }}-rhel7.7.0-{{ item }}"
+        vm_size: Standard_A2
+        admin_username: ansible
+        ssh_password_enabled: false
+        ssh_public_keys:
+          - path: /home/ansible/.ssh/authorized_keys
+            key_data: "{{ automata_sshkey }}"
+        image:
+          publisher: RedHat
+          offer: RHEL
+          sku: 7.7
+          version: 7.7.2019090316
+        public_ip_allocation_method: Disabled
+      loop: "{{ range(0, 1)|list }}"
+
 #  - name: setup real clients
 #    azure_rm_virtualmachine:
 #      resource_group: "{{ resourcegroup_name }}"
@@ -76,4 +77,3 @@
 #        version: 7.7.2020020415
 #      public_ip_allocation_method: Disabled
 #    loop: "{{ range(0, 1)|list }}" 
-  

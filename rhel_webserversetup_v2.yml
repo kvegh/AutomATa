@@ -1,21 +1,20 @@
 ---
 - name: webserver setup
-  user: ansible 
+  user: ansible
   hosts: all
 
   tasks:
     - name: install webserver pkg
-      yum:
+      ansible.builtin.yum:
         name: httpd
         state: present
 
     - name: enable webserver
-      systemd:
+      ansible.builtin.systemd:
         name: httpd
-        enabled: yes
+        enabled: true
 
     - name: start webserver
-      systemd:
+      ansible.builtin.systemd:
         name: httpd
         state: started
-

@@ -11,10 +11,10 @@
 # Created by kvegh@redhat.com
 
 - name: run insights to obtain latest diagnosis info
-  hosts: "rhel-kvegh-ld23-711.kveghdemo.at"
+  hosts: rhel-kvegh-ld23-711.kveghdemo.at
   vars:
     insights_remediation: " 2ff09c1b-a5c7-42f7-8290-4798d36121be"
-    insights_signature_exclude: "/hosts,/vars/insights_signature,/vars/insights_remediation"
+    insights_signature_exclude: /hosts,/vars/insights_signature,/vars/insights_remediation
     insights_signature: !!binary |
       TFMwdExTMUNSVWRKVGlCUVIxQWdVMGxIVGtGVVZWSkZMUzB0TFMwS1ZtVnljMmx2YmpvZ1IyNTFV
       RWNnZGpFS0NtbFJTVlpCZDFWQldVaHBRblZqZG5jMU9FUXJhalZ3VGtGUmFtRkdVa0ZCYTBSVWNu
@@ -39,36 +39,36 @@
   become: true
   tasks:
     - name: obtain diagnosis info
-      command: "insights-client --diagnosis{{ insights_remediation | regex_search('\\s[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}') }}"
       register: insights_result
       changed_when: false
       check_mode: false
-    - name: register insights report as fact for use by other plays
-      set_fact: insights_report={{ insights_result.stdout }}
+      ansible.builtin.command: insights-client --diagnosis{{ insights_remediation | regex_search('\s[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}')
+        }}
 
-# Decreased security: System log permissions
-# Identifier: (advisor:hardening_logging_log_perms|HARDENING_LOGGING_3_LOG_PERMS,default_perms)
-# Version: 9788a2d4ce207e3a7d0208e1627e79969b1f052f
+    - name: register insights report as fact for use by other plays
+      ansible.builtin.set_fact:
+        insights_report: "{{ insights_result.stdout }}"
+
 - name: Fix hardening_logging_log_perms issue
-  hosts: "rhel-kvegh-ld23-711.kveghdemo.at"
+  hosts: rhel-kvegh-ld23-711.kveghdemo.at
   become: true
   vars:
     pydata: '{{ insights_report.details["hardening_logging_log_perms|HARDENING_LOGGING_3_LOG_PERMS"] }}'
     perms:
-      "/var/log": {owner: "root", group: "root", mode: "u=rw,o-w"}
-      "/var/log/wtmp": {owner: "root", group: "utmp", mode: "u=rw,g-x,o-wx"}
-      "/var/log/btmp": {owner: "root", group: "utmp", mode: "u=rw,g-rwx,o-rwx"}
-      "/var/log/audit": {owner: "root", group: "root", mode: "u=rw,o-rwx"}
-      "/var/log/boot.log": {owner: "root", group: "root", mode: "u=rw,g-x,o-wx"}
-      "/var/log/dmesg": {owner: "root", group: "root", mode: "u=rw,g-x,o-wx"}
-      "/var/log/lastlog": {owner: "root", group: "utmp", mode: "u=rw,g-x,o-wx"}
-      "/var/log/messages": {owner: "root", group: "root", mode: "u=rw,g-x,o-wx"}
-      "/var/log/spooler": {owner: "root", group: "root", mode: "u=rw,g-x,o-wx"}
-      "/var/log/tallylog": {owner: "root", group: "root", mode: "u=rw,g-x,o-wx"}
-      "/var/log/yum.log": {owner: "root", group: "root", mode: "u=rw,g-x,o-wx"}
-      "/var/log/cron": {owner: "root", group: "root", mode: "u=rw,g-x,o-rwx"}
-      "/var/log/maillog": {owner: "root", group: "root", mode: "u=rw,g-x,o-rwx"}
-      "/var/log/secure": {owner: "root", group: "root", mode: "u=rw,g-x,o-rwx"}
+      /var/log: { owner: root, group: root, mode: "u=rw,o-w" }
+      /var/log/wtmp: { owner: root, group: utmp, mode: "u=rw,g-x,o-wx" }
+      /var/log/btmp: { owner: root, group: utmp, mode: "u=rw,g-rwx,o-rwx" }
+      /var/log/audit: { owner: root, group: root, mode: "u=rw,o-rwx" }
+      /var/log/boot.log: { owner: root, group: root, mode: "u=rw,g-x,o-wx" }
+      /var/log/dmesg: { owner: root, group: root, mode: "u=rw,g-x,o-wx" }
+      /var/log/lastlog: { owner: root, group: utmp, mode: "u=rw,g-x,o-wx" }
+      /var/log/messages: { owner: root, group: root, mode: "u=rw,g-x,o-wx" }
+      /var/log/spooler: { owner: root, group: root, mode: "u=rw,g-x,o-wx" }
+      /var/log/tallylog: { owner: root, group: root, mode: "u=rw,g-x,o-wx" }
+      /var/log/yum.log: { owner: root, group: root, mode: "u=rw,g-x,o-wx" }
+      /var/log/cron: { owner: root, group: root, mode: "u=rw,g-x,o-rwx" }
+      /var/log/maillog: { owner: root, group: root, mode: "u=rw,g-x,o-rwx" }
+      /var/log/secure: { owner: root, group: root, mode: "u=rw,g-x,o-rwx" }
     insights_signature_exclude: /hosts,/vars/insights_signature,/vars/pydata
     insights_signature: !!binary |
       TFMwdExTMUNSVWRKVGlCUVIxQWdVMGxIVGtGVVZWSkZMUzB0TFMwS1ZtVnljMmx2YmpvZ1IyNTFV
@@ -97,20 +97,20 @@
     - when: insights_report.details["hardening_logging_log_perms|HARDENING_LOGGING_3_LOG_PERMS"] is defined
       block:
         - name: Set the correct permissions on affected log files
-          file:
+          with_items: "{{ pydata.detected_problem_log_perms }}"
+
+          # Decreased security: OpenSSH ClientAlive settings
+          # Identifier: (advisor:hardening_ssh_client_alive|OPENSSH_HARDENING_CLIENT_ALIVE,fix)
+          # Version: 9788a2d4ce207e3a7d0208e1627e79969b1f052f
+          ansible.builtin.file:
             path: "{{ item.log_perms_dirfilename }}"
             owner: "{{ perms[item.log_perms_dirfilename]['owner'] }}"
             group: "{{ perms[item.log_perms_dirfilename]['group'] }}"
             mode: "{{ perms[item.log_perms_dirfilename]['mode'] }}"
-          with_items: "{{ pydata.detected_problem_log_perms }}"
 
-
-# Decreased security: OpenSSH ClientAlive settings
-# Identifier: (advisor:hardening_ssh_client_alive|OPENSSH_HARDENING_CLIENT_ALIVE,fix)
-# Version: 9788a2d4ce207e3a7d0208e1627e79969b1f052f
 - name: Set ClientMaxAlive and ClientAliveInterval. Restart sshd service.
-  hosts: "rhel-kvegh-ld23-711.kveghdemo.at"
-  become: yes
+  hosts: rhel-kvegh-ld23-711.kveghdemo.at
+  become: true
   vars:
     insights_signature_exclude: /hosts,/vars/insights_signature
     insights_signature: !!binary |
@@ -136,30 +136,30 @@
       PQ==
   tasks:
     - name: Update ClientAliveInterval setting
-      lineinfile:
+      ansible.builtin.lineinfile:
         dest: /etc/ssh/sshd_config
-        backup: yes
-        regexp: '(?i)^\s*ClientAliveInterval\s+[0-9]+'
-        line: 'ClientAliveInterval 300'
+        backup: true
+        regexp: (?i)^\s*ClientAliveInterval\s+[0-9]+
+        line: ClientAliveInterval 300
 
     - name: Update ClientMaxAlive setting
-      lineinfile:
+      ansible.builtin.lineinfile:
         dest: /etc/ssh/sshd_config
-        backup: yes
-        regexp: '(?i)^\s*ClientAliveCountMax\s+[0-9]+'
-        line: 'ClientAliveCountMax 0'
+        backup: true
+        regexp: (?i)^\s*ClientAliveCountMax\s+[0-9]+
+        line: ClientAliveCountMax 0
 
     - name: restart sshd service
-      service:
+      ansible.builtin.service:
         name: sshd
         state: restarted
-
 
 # Decreased security: OpenSSH Ciphers and MACs settings
 # Identifier: (advisor:hardening_ssh_hmac_cipher|OPENSSH_HARDENING_HMAC_CIPHER_2,fix)
 # Version: 9788a2d4ce207e3a7d0208e1627e79969b1f052f
+
 - name: Update openssh-server package, replace Ciphers and MACs line in /etc/ssh/sshd_config and restart sshd service
-  hosts: "rhel-kvegh-ld23-711.kveghdemo.at"
+  hosts: rhel-kvegh-ld23-711.kveghdemo.at
   become: true
   vars:
     pydata: "{{ insights_report.details['hardening_ssh_hmac_cipher|OPENSSH_HARDENING_HMAC_CIPHER_2'] | default('') }}"
@@ -204,7 +204,7 @@
         path: /etc/ssh/sshd_config
         regexp: ^\s*Ciphers
         line: Ciphers {{ ",".join(pydata.ciphers_recomm) }}
-        backup: yes
+        backup: true
 
     - when:
         - pydata.macs_recomm is defined
@@ -214,19 +214,18 @@
         path: /etc/ssh/sshd_config
         regexp: ^\s*MACs
         line: MACs {{ ",".join(pydata.macs_recomm) }}
-        backup: yes
+        backup: true
 
     - name: Restart sshd service
       service:
         name: sshd
         state: restarted
 
-
 # Privilege Escalation: Systemd unit files with insecure permissions or ownership
 # Identifier: (advisor:hardening_systemd_units|SYSTEMD_UNITS_INSECURE,fix)
 # Version: b26310c106891875075bf8d16600f16fdec64b20
 - name: Fix insecure permissions and ownership of systemd unit files
-  hosts: "rhel-kvegh-ld23-711.kveghdemo.at"
+  hosts: rhel-kvegh-ld23-711.kveghdemo.at
   become: true
   vars:
     pydata: "{{ insights_report.details['hardening_systemd_units|SYSTEMD_UNITS_INSECURE'] | default('') }}"
@@ -261,49 +260,49 @@
   tasks:
     - block:
         - name: Find all regular files listed in 'perms_dirs' and 'owner_dirs' and store them
-          find:
+          register: all_found_regular_files
+          ansible.builtin.find:
             paths: "{{ all_dirs }}"
             patterns:
-              - '*.service'
-              - '*.socket'
-              - '*.device'
-              - '*.mount'
-              - '*.automount'
-              - '*.swap'
-              - '*.target'
-              - '*.path'
-              - '*.timer'
-              - '*.slice'
-              - '*.scope'
+              - "*.service"
+              - "*.socket"
+              - "*.device"
+              - "*.mount"
+              - "*.automount"
+              - "*.swap"
+              - "*.target"
+              - "*.path"
+              - "*.timer"
+              - "*.slice"
+              - "*.scope"
             file_type: file
-            hidden: yes
-          register: all_found_regular_files
+            hidden: true
 
         - name: Find all symbolic links listed in 'perms_dirs' and 'owner_dirs' and store them
-          find:
+          register: all_found_symbolic_links
+          ansible.builtin.find:
             paths: "{{ all_dirs }}"
             patterns:
-              - '*.service'
-              - '*.socket'
-              - '*.device'
-              - '*.mount'
-              - '*.automount'
-              - '*.swap'
-              - '*.target'
-              - '*.path'
-              - '*.timer'
-              - '*.slice'
-              - '*.scope'
+              - "*.service"
+              - "*.socket"
+              - "*.device"
+              - "*.mount"
+              - "*.automount"
+              - "*.swap"
+              - "*.target"
+              - "*.path"
+              - "*.timer"
+              - "*.slice"
+              - "*.scope"
             file_type: link
-            hidden: yes
-          register: all_found_symbolic_links
+            hidden: true
 
         - name: Retrieve genuine information of symbolic links
-          stat:
-            path: "{{ item }}"
-            follow: yes
           loop: "{{ all_found_symbolic_links.files | map(attribute='path') | list }}"
           register: stat_files
+          ansible.builtin.stat:
+            path: "{{ item }}"
+            follow: true
 
         - name: Set the final list of files to check
           set_fact:
@@ -311,45 +310,47 @@
       when: all_dirs|length > 0
 
     - name: Identify files with insecure permissions or ownership
-      set_fact:
-        wrong_perms_exec_or_write_files: "{{ (all_found_files | selectattr('xusr', '==', true) | map(attribute='path') | list + all_found_files | selectattr('xgrp', '==', true) | map(attribute='path')\
-          \ | list + all_found_files | selectattr('xoth', '==', true) | map(attribute='path') | list + all_found_files | selectattr('woth', '==', true) | map(attribute='path') | list ) | unique }}"
-        wrong_perms_nonroot_group_write_files: "{{ all_found_files | selectattr('gr_name', '!=', 'root') | selectattr('wgrp', '==', true) | map(attribute='path') | list }}"
-        wrong_owner_files: "{{ all_found_files | selectattr('pw_name', '!=', 'root') | map(attribute='path') | list }}"
       when: all_found_files|length > 0
+      ansible.builtin.set_fact:
+        wrong_perms_exec_or_write_files: "{{ (all_found_files | selectattr('xusr', '==', true) | map(attribute='path') | list + all_found_files | selectattr('xgrp',
+          '==', true) | map(attribute='path') | list + all_found_files | selectattr('xoth', '==', true) | map(attribute='path') | list + all_found_files | selectattr('woth',
+          '==', true) | map(attribute='path') | list ) | unique }}"
+        wrong_perms_nonroot_group_write_files: "{{ all_found_files | selectattr('gr_name', '!=', 'root') | selectattr('wgrp', '==', true) | map(attribute='path')
+          | list }}"
+        wrong_owner_files: "{{ all_found_files | selectattr('pw_name', '!=', 'root') | map(attribute='path') | list }}"
 
     - name: Fix "execute" or "others write" permissions of all systemd unit files
-      file:
-        path: "{{ item }}"
-        mode: a-x,o-w
       loop: "{{ wrong_perms_exec_or_write_files }}"
       when: wrong_perms_exec_or_write_files|length > 0
+      ansible.builtin.file:
+        path: "{{ item }}"
+        mode: a-x,o-w
 
     - name: Fix "group write" permissions of all systemd unit files if the group is other than "root"
-      file:
-        path: "{{ item }}"
-        mode: g-w
       loop: "{{ wrong_perms_nonroot_group_write_files }}"
       when: wrong_perms_nonroot_group_write_files|length > 0
+      ansible.builtin.file:
+        path: "{{ item }}"
+        mode: g-w
 
     - name: Fix owner of all systemd unit files
-      file:
-        path: "{{ item }}"
-        owner: root
       loop: "{{ wrong_owner_files }}"
       when: wrong_owner_files|length > 0
+      ansible.builtin.file:
+        path: "{{ item }}"
+        owner: root
 
     - name: Reload systemd unit files
-      systemd:
-        daemon_reload: yes
       when: (wrong_perms_exec_or_write_files + wrong_perms_nonroot_group_write_files + wrong_owner_files) | length > 0
 
+      # Unsupported kernel version on Intel Purley Platform with Intel Skylake CPU
+      # Identifier: (advisor:intel_purley_skylake_supportable|INTEL_PURLEY_SKYLAKE_SUPPORTABLE,fix)
+      # Version: 88d3721bac44b2a2e88cb6e470364af46a2b22d3
+      ansible.builtin.systemd:
+        daemon_reload: true
 
-# Unsupported kernel version on Intel Purley Platform with Intel Skylake CPU
-# Identifier: (advisor:intel_purley_skylake_supportable|INTEL_PURLEY_SKYLAKE_SUPPORTABLE,fix)
-# Version: 88d3721bac44b2a2e88cb6e470364af46a2b22d3
 - name: Update kernel
-  hosts: "rhel-kvegh-ld23-711.kveghdemo.at"
+  hosts: rhel-kvegh-ld23-711.kveghdemo.at
   become: true
 
   vars:
@@ -402,25 +403,25 @@
         insights_needs_reboot: true
 
     - when: not kernel_update is changed
-# The latest kernel is already installed so boot from it.  Sort the installed kernels
-# by build time and select the one with the most recent build time
+      # The latest kernel is already installed so boot from it.  Sort the installed kernels
+      # by build time and select the one with the most recent build time
       block:
         - name: Installing kernel package version
           shell: rpm -q kernel --queryformat="%{buildtime}\t%{version}-%{release}.%{arch}\n" | sort -nr | head -1 | cut -f2
           register: latest_kernel
-          check_mode: no
+          check_mode: false
 
         - name: get configured default kernel
           command: /sbin/grubby --default-kernel
           register: default_kernel
-          check_mode: no
+          check_mode: false
           changed_when: false
 
         - when: default_kernel.stdout.split('-', 1)[1] != latest_kernel.stdout
           name: set the default kernel to the latest installed
           command: /sbin/grubby --set-default /boot/vmlinuz-{{ latest_kernel.stdout }}
           register: grub_change
-          check_mode: no
+          check_mode: false
           changed_when: grub_change.rc == 0
 
         - when: grub_change is changed
@@ -428,11 +429,10 @@
           set_fact:
             insights_needs_reboot: true
 
-
 # Reboots a system if any of the preceeding plays sets the 'insights_needs_reboot' variable to true.
 # The variable can be overridden to suppress this behavior.
 - name: Reboot system (if applicable)
-  hosts: "rhel-kvegh-ld23-711.kveghdemo.at"
+  hosts: rhel-kvegh-ld23-711.kveghdemo.at
   become: true
   gather_facts: false
   vars:
@@ -464,15 +464,16 @@
         - insights_needs_reboot
       block:
         - name: Reboot system
-          shell: sleep 2 && shutdown -r now "Ansible triggered reboot"
           async: 1
           poll: 0
           ignore_errors: true
+          ansible.builtin.shell: sleep 2 && shutdown -r now "Ansible triggered reboot"
 
         - name: Wait for system to boot up
           local_action:
-            module: wait_for
-            host: "{{ hostvars[inventory_hostname]['ansible_host'] | default(hostvars[inventory_hostname]['ansible_ssh_host'], true) | default(inventory_hostname, true) }}"
+            module: ansible.builtin.wait_for
+            host: "{{ hostvars[inventory_hostname]['ansible_host'] | default(hostvars[inventory_hostname]['ansible_ssh_host'], true) | default(inventory_hostname,
+              true) }}"
             port: "{{ hostvars[inventory_hostname]['ansible_port'] | default(hostvars[inventory_hostname]['ansible_ssh_port'], true) | default('22', true) }}"
             delay: 15
             search_regex: OpenSSH
@@ -480,7 +481,7 @@
           become: false
 
 - name: run insights
-  hosts: "rhel-kvegh-ld23-711.kveghdemo.at"
+  hosts: rhel-kvegh-ld23-711.kveghdemo.at
   become: true
   gather_facts: false
   vars:
@@ -508,5 +509,5 @@
       PQ==
   tasks:
     - name: run insights
-      command: insights-client
       changed_when: false
+      ansible.builtin.command: insights-client

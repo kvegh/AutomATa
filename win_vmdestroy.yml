@@ -1,20 +1,19 @@
 ---
-- name: manage libvirt guests 
-  user: ansible 
+- name: manage libvirt guests
+  user: ansible
   hosts: baremetal
   vars:
-      project_name: web
-      number_of_hosts: 2
-      os_type: win
-  
+    project_name: web
+    number_of_hosts: 2
+    os_type: win
+
   tasks:
     - name: stop all project VMs - {{ project_name }}-win
-      virt:
-          name: "{{ os_type }}-{{ project_name }}{{ item }}"
-          state: destroyed
       with_sequence: count={{ number_of_hosts }}
+      community.libvirt.virt:
+        name: "{{ os_type }}-{{ project_name }}{{ item }}"
+        state: destroyed
 
     - name: drop {{ project_name }}-win VM config with disks
-      command: "virsh undefine {{ os_type }}-{{ project_name }}{{ item }} --remove-all-storage"
       with_sequence: count={{ number_of_hosts }}
-    
+      ansible.builtin.command: virsh undefine {{ os_type }}-{{ project_name }}{{ item }} --remove-all-storage

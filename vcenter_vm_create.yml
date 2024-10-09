@@ -2,47 +2,42 @@
 - name: test vm list
   hosts: all
   connection: local
-  vars: 
+  vars:
     - vcenter_hostname: vcenter.home.lab
     - vcenter_username: administrator@vSphere.local
     - vcenter_password: TotalSecret!1
 
-  tasks: 
-  - name: Create a virtual machine from a template
-    vmware_guest:
-      hostname: "{{ vcenter_hostname }}"
-      username: "{{ vcenter_username }}"
-      password: "{{ vcenter_password }}"
-      validate_certs: no
-      folder: /
-      name: testvm_test2
-      state: poweredon
-      template: RHEL_Template
-      disk:
-      - size_gb: 10
-        type: thin
-        datastore: datastore1
-      datacenter: Datacenter1
-      hardware:
-        memory_mb: 512
-        num_cpus: 1
-        num_cpu_cores_per_socket: 1
-        scsi: paravirtual
-        memory_reservation_lock: True
-        mem_limit: 1024
-#        mem_reservation: 1024
-        cpu_limit: 8096
-#        cpu_reservation: 4096
-#        max_connections: 5
-        hotadd_cpu: True
-        hotremove_cpu: True
-        hotadd_memory: False
-        version: 14 # Hardware version of virtual machine
-        boot_firmware: "efi"
-      networks:
-      - name: VM Network
-#        mac: aa:bb:dd:aa:00:14
-      wait_for_ip_address: yes
-    delegate_to: localhost
-    register: deploy
-
+  tasks:
+    - name: Create a virtual machine from a template
+      delegate_to: localhost
+      register: deploy
+      community.vmware.vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: false
+        folder: /
+        name: testvm_test2
+        state: poweredon
+        template: RHEL_Template
+        disk:
+          - size_gb: 10
+            type: thin
+            datastore: datastore1
+        datacenter: Datacenter1
+        hardware:
+          memory_mb: 512
+          num_cpus: 1
+          num_cpu_cores_per_socket: 1
+          scsi: paravirtual
+          memory_reservation_lock: true
+          mem_limit: 1024
+          cpu_limit: 8096
+          hotadd_cpu: true
+          hotremove_cpu: true
+          hotadd_memory: false
+          version: 14
+          boot_firmware: efi
+        networks:
+          - name: VM Network
+        wait_for_ip_address: true

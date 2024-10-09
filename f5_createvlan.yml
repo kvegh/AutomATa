@@ -4,14 +4,14 @@
   connection: local
 
   tasks:
-   - name: Create a VLAN 
-     bigip_vlan:
-         untagged_interfaces: 1.1
-         name: web-vlan1
-         provider: 
-           password: admin
-           server: f5
-           user: admin
-           validate_certs: no
-         state: present
-     delegate_to: localhost
+    - name: Create a VLAN
+      delegate_to: localhost
+      f5networks.f5_modules.bigip_vlan:
+        untagged_interfaces: 1.1
+        name: web-vlan1
+        provider:
+          password: admin
+          server: f5
+          user: admin
+          validate_certs: false
+        state: present

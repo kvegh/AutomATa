@@ -1,17 +1,16 @@
 ---
-- name: manage libvirt guests 
+- name: manage libvirt guests
   hosts: localhost
   connection: local
   vars:
-      host_name: web
+    host_name: web
 
   tasks:
     - name: remove ssh known_hosts entries locally
-      known_hosts:
+      ansible.builtin.known_hosts:
         name: "{{ host_name }}"
         path: /home/ansible/.ssh/known_hosts
-        state: absent 
+        state: absent
 
-#    - debug: var="{{ os_type }}-{{ project_name }}{{ item }}"
-#      with_sequence: count="{{ number_of_hosts }}"
-
+    #    - debug: var="{{ os_type }}-{{ project_name }}{{ item }}"
+    #      with_sequence: count="{{ number_of_hosts }}"

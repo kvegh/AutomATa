@@ -7,4 +7,4 @@
 
   tasks:
     - name: pingpong
-      win_ping:
+      ansible.windows.win_ping:

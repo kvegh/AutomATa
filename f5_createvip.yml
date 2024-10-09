@@ -4,20 +4,20 @@
   connection: local
 
   tasks:
-  - name: Create a VIP
-    bigip_virtual_server:
-      description: foo-vip
-      destination: 10.0.122.20
-      provider: 
-        password: admin
-        server: f5
-        user: admin
-        validate_certs: no
-      name: vip-1
-      pool: web-pool
-      port: 443
-      snat: Automap
-      all_profiles:
-           - http
-           - clientssl
-    delegate_to: localhost
+    - name: Create a VIP
+      delegate_to: localhost
+      f5networks.f5_modules.bigip_virtual_server:
+        description: foo-vip
+        destination: 10.0.122.20
+        provider:
+          password: admin
+          server: f5
+          user: admin
+          validate_certs: false
+        name: vip-1
+        pool: web-pool
+        port: 443
+        snat: Automap
+        all_profiles:
+          - http
+          - clientssl

@@ -1,89 +1,87 @@
 ---
 - name: satellite preparation
-  user: ansible 
+  user: ansible
   hosts: rhel_vms
   vars:
     sat_version: 6.8
 
   tasks:
     - name: sync /etc/hosts
-      copy:
+      ansible.builtin.copy:
         src: /etc/hosts
         dest: /etc
 
     - name: make sure ntpd client service is enabled
-      systemd:
+      ansible.builtin.systemd:
         name: chronyd
-        enabled: yes
+        enabled: true
 
     - name: make sure ntpd client is running
-      systemd:
+      ansible.builtin.systemd:
         name: chronyd
         state: started
 
     - name: make sure rhsmcertd is running
-      systemd:
+      ansible.builtin.systemd:
         name: rhsmcertd
         state: started
 
     - name: download katello rpm for retistration from satellite
-      get_url:
+      ansible.builtin.get_url:
         url: http://satellite.example.com/pub/katello-ca-consumer-latest.noarch.rpm
         dest: /var/tmp
 
     - name: install RPM with yum
-      yum: 
+      ansible.builtin.yum:
         name: /var/tmp/katello-ca-consumer-latest.noarch.rpm
-        disable_gpg_check: yes
+        disable_gpg_check: true
         state: present
 
-    - name: RHEL 7 specific activation, repos 
+    - name: RHEL 7 specific activation, repos
       block:
-
-        - name: Register to satellite with activationkey and consume subscriptions 
-          redhat_subscription:
+        - name: Register to satellite with activationkey and consume subscriptions
+          ignore_errors: true
+          community.general.redhat_subscription:
             state: present
             # activationkey: Insights_Key_RHEL7
             activationkey: RHEL_74_AK_ng
             org_id: SuperCorp
-            #            auto_attach: true
-          ignore_errors: yes
+        #            auto_attach: true
 
         - name: on RHEL7 we need to update subscription-manager
-          package:
-            name: "{{ item }}"
-            state: latest
           loop:
             - subscription-manager
             - python-six
+          ansible.builtin.package:
+            name: "{{ item }}"
+            state: latest
 
-        - name: enable Satellite Host Tools repo 
+        - name: enable Satellite Host Tools repo
           rhsm_repository:
-                  # name: "rhel-7-server-satellite-tools-{{ sat_version }}-rpms"
+            # name: "rhel-7-server-satellite-tools-{{ sat_version }}-rpms"
             name: rhel-7-server-satellite-client-6-rpms
             state: enabled
 
       when: ansible_distribution_major_version == "7"
 
-    - name: RHEL 8 specific activation, repos 
+    - name: RHEL 8 specific activation, repos
       block:
-
-        - name: Register to satellite with activationkey and consume subscriptions 
-          redhat_subscription:
+        - name: Register to satellite with activationkey and consume subscriptions
+          community.general.redhat_subscription:
             state: present
             activationkey: AK_RHEL_Test
             org_id: SuperCorp
-            #            auto_attach: true
+        #            auto_attach: true
 
-        - name: enable Satellite Host Tools repo 
+        - name: enable Satellite Host Tools repo
           rhsm_repository:
-                  # name: "satellite-tools-{{ sat_version }}-for-rhel-8-x86_64-rpms"
+            # name: "satellite-tools-{{ sat_version }}-for-rhel-8-x86_64-rpms"
             name: satellite-client-6-for-rhel-8-x86_64-rpms
             state: enabled
 
       when: ansible_distribution_major_version == "8"
 
     - name: install katello-agent and katello-host-tools
-      yum: 
+      ansible.builtin.yum:
         name: katello-agent
         state: present

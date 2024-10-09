@@ -2,106 +2,106 @@
 - name: planting Insights issue - dnf.conf
   hosts: rhel_vms
 
-  tasks: 
-  - name: on RHEL 8 in dnf.conf the best= option is not present
-    lineinfile:
-      path: /etc/dnf/dnf.conf
-      regexp: "^best="
-      line: "#best=True"
-    when: ansible_distribution_major_version == "8"
+  tasks:
+    - name: on RHEL 8 in dnf.conf the best= option is not present
+      when: ansible_distribution_major_version == "8"
+      ansible.builtin.lineinfile:
+        path: /etc/dnf/dnf.conf
+        regexp: ^best=
+        line: "#best=True"
 
 - name: planting Insights issues - irqbalance
   hosts: gateway,rhel_vms
-  become: yes
+  become: true
   tags: irq
-  vars: 
+  vars:
     project_name: changeme
 
-  tasks: 
-  - name: shutdown VM to vcpucount reconfigure
-    virt:
-      name: "rhel-kvegh-{{ project_name }}-741"
-      state: shutdown
-    when: ansible_virtualization_role == "host"
+  tasks:
+    - name: shutdown VM to vcpucount reconfigure
+      when: ansible_virtualization_role == "host"
+      community.libvirt.virt:
+        name: rhel-kvegh-{{ project_name }}-741
+        state: shutdown
 
-  - name: Wait for host to shut down 
-    local_action: 
-      module: wait_for
-      host: "rhel-kvegh-{{ project_name }}-741"
-      port: 22
-      delay: 5
-      state: drained
+    - name: Wait for host to shut down
+      local_action:
+        module: ansible.builtin.wait_for
+        host: rhel-kvegh-{{ project_name }}-741
+        port: 22
+        delay: 5
+        state: drained
 
-  - name: set vcpucount config 
-    command: virsh setvcpus rhel-kvegh-"{{ project_name }}"-741 2 --maximum --config
-    when: ansible_virtualization_role == "host"
+    - name: set vcpucount config
+      when: ansible_virtualization_role == "host"
+      ansible.builtin.command: virsh setvcpus rhel-kvegh-"{{ project_name }}"-741 2 --maximum --config
 
-  - name: set vcpucount MAX config 
-    command: "virsh setvcpus rhel-kvegh-{{ project_name }}-741 2 --config"
-    when: ansible_virtualization_role == "host"
+    - name: set vcpucount MAX config
+      when: ansible_virtualization_role == "host"
+      ansible.builtin.command: virsh setvcpus rhel-kvegh-{{ project_name }}-741 2 --config
 
-  - name: startup VM after vcpucount reconfigure
-    virt:
-      name: "rhel-kvegh-{{ project_name }}-741"
-      state: running
-    when: ansible_virtualization_role == "host"
+    - name: startup VM after vcpucount reconfigure
+      when: ansible_virtualization_role == "host"
+      community.libvirt.virt:
+        name: rhel-kvegh-{{ project_name }}-741
+        state: running
 
-  - name: Wait for host too boot back up 
-    local_action: 
-      module: wait_for
-      host: "rhel-kvegh-{{ project_name }}-741"
-      port: 22
-      delay: 5
-      state: started
+    - name: Wait for host too boot back up
+      local_action:
+        module: ansible.builtin.wait_for
+        host: rhel-kvegh-{{ project_name }}-741
+        port: 22
+        delay: 5
+        state: started
 
-  - name: disable and stop irqbalance service
-    service: 
-      name: irqbalance 
-      enabled: no
-      state: stopped
-    when: ansible_virtualization_role == "guest" and ansible_distribution_major_version == "7"
+    - name: disable and stop irqbalance service
+      when: ansible_virtualization_role == "guest" and ansible_distribution_major_version == "7"
+      ansible.builtin.service:
+        name: irqbalance
+        enabled: false
+        state: stopped
 
 - name: planting issues - sshd_config ClientAlive parameters
   hosts: rhel_vms
-  
-  tasks: 
-  - name: plant sshd_config entries
-    blockinfile:
-      path: /etc/ssh/sshd_config
-      marker: "# {mark} Planted by kvegh via Ansible for Insights remediation demonstration" 
-      insertafter: "#ClientAliveCountMax 3"
-      block: |
-        ClientAliveInterval 420
-        ClientAliveCountMax 3  
+
+  tasks:
+    - name: plant sshd_config entries
+      ansible.builtin.blockinfile:
+        path: /etc/ssh/sshd_config
+        marker: "# {mark} Planted by kvegh via Ansible for Insights remediation demonstration"
+        insertafter: "#ClientAliveCountMax 3"
+        block: |
+          ClientAliveInterval 420
+          ClientAliveCountMax 3  
 
 - name: this is actually a FIX for insights, using the right script to have the logs fixing work
   hosts: rhel_vms
-  become: yes
-  vars: 
+  become: true
+  vars:
     project_name: changeme
 
-  tasks: 
-  - name: check if source file exists
-    stat: 
-      path: /usr/bin/redhat-access-insights
-    register: insights_test
-
-  - name: block to move file and link
-    block: 
-    - name: copy the original
-      copy: 
-        src: /usr/bin/redhat-access-insights
-        remote_src: yes
-        dest: /root/
-
-    - name: remove original
-      file: 
-        name: /usr/bin/redhat-access-insights
-        state: absent 
-    
-    - name: link to right target
-      file: 
+  tasks:
+    - name: check if source file exists
+      register: insights_test
+      ansible.builtin.stat:
         path: /usr/bin/redhat-access-insights
-        state: link
-        src: /usr/bin/insights-client
-    when: insights_test.stat.exists and insights_test.stat.islnk == false
+
+    - name: block to move file and link
+      block:
+        - name: copy the original
+          ansible.builtin.copy:
+            src: /usr/bin/redhat-access-insights
+            remote_src: true
+            dest: /root/
+
+        - name: remove original
+          ansible.builtin.file:
+            name: /usr/bin/redhat-access-insights
+            state: absent
+
+        - name: link to right target
+          file:
+            path: /usr/bin/redhat-access-insights
+            state: link
+            src: /usr/bin/insights-client
+      when: insights_test.stat.exists and insights_test.stat.islnk == false

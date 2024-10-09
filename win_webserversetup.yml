@@ -3,14 +3,14 @@
   hosts: win_vms
 
   tasks:
-  - name: Install IIS Web-Server with sub features and management tools
-    win_feature:
-      name: Web-Server
-      state: present
-      include_sub_features: yes
-      include_management_tools: yes
-    register: win_feature
+    - name: Install IIS Web-Server with sub features and management tools
+      register: win_feature
+      ansible.windows.win_feature:
+        name: Web-Server
+        state: present
+        include_sub_features: true
+        include_management_tools: true
 
-  - name: reboot if installing Web-Server feature requires it
-    win_reboot:
-    when: win_feature.reboot_required
+    - name: reboot if installing Web-Server feature requires it
+      when: win_feature.reboot_required
+      ansible.windows.win_reboot:

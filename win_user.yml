@@ -4,10 +4,9 @@
 
   tasks:
     - name: Add user
-      win_user: 
+      ansible.windows.win_user:
         name: bob
         password: B0bpass1
         state: present
-        groups: 
+        groups:
           - Administrators
-

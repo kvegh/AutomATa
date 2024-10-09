@@ -1,12 +1,9 @@
 ---
 - name: importing data
-  become: no
+  become: false
   user: awx
   hosts: AAP22
 
-  tasks: 
-  - name: run import 
-    shell: 'awx-manage inventory_import --source /var/lib/awx/hosts --inventory-name "I2"'
-     
-
-
+  tasks:
+    - name: run import
+      ansible.builtin.shell: awx-manage inventory_import --source /var/lib/awx/hosts --inventory-name "I2"

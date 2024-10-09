@@ -1,30 +1,30 @@
 ---
 - name: rudimentary wrapper arpund virsh instead of a proper libvirt plugin
-  become: yes
+  become: true
   user: ansible
   hosts: gateway
 
-  tasks: 
-  - name: run wrapper on gateway 
-    command: /home/ansible/inventory_wrapper.sh 
+  tasks:
+    - name: run wrapper on gateway
+      ansible.builtin.command: /home/ansible/inventory_wrapper.sh
 
-  - name: fetch output
-    fetch:
-      src: /home/ansible/hosts
-      dest: /tmp/hosts
+    - name: fetch output
+      ansible.builtin.fetch:
+        src: /home/ansible/hosts
+        dest: /tmp/hosts
 
-      #  - name: converting and importing 
-      #    shell: "ansible-inventory -i /tmp/hosts --list > /tmp/hosts.json"
-      #    delegate_to: localhost
+#  - name: converting and importing 
+#    shell: "ansible-inventory -i /tmp/hosts --list > /tmp/hosts.json"
+#    delegate_to: localhost
 
 - name: copying ini
-  become: yes
+  become: true
   user: ansible
   hosts: AAP22
 
-  tasks: 
-  - name: push output
-    copy:
-      src: /tmp/hosts
-      dest: /var/lib/awx/hosts
-      owner: awx
+  tasks:
+    - name: push output
+      ansible.builtin.copy:
+        src: /tmp/hosts
+        dest: /var/lib/awx/hosts
+        owner: awx

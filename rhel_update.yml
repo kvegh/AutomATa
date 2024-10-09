@@ -2,19 +2,17 @@
 - name: update all packages
   hosts: all
 
-  tasks: 
-  - name: after contentview change s-m refresh is necessary
-    command: subscription-manager refresh
+  tasks:
+    - name: after contentview change s-m refresh is necessary
+      ansible.builtin.command: subscription-manager refresh
 
-  - name: update all
-    yum: 
-      state: latest
-      name: '*'
+    - name: update all
+      ansible.builtin.yum:
+        state: latest
+        name: "*"
 
-  - name: reboot
-    reboot:
+    - name: reboot
+      ansible.builtin.reboot:
 
-  - name: set content host facts straight
-    command: subscription-manager facts --update
-
-
+    - name: set content host facts straight
+      ansible.builtin.command: subscription-manager facts --update

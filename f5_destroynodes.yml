@@ -1,36 +1,35 @@
 ---
 - name: define and add webserver nodes to the loadbalancer
   hosts:
-  - rhel_vms
-  - win_vms
-  gather_facts: True
+    - rhel_vms
+    - win_vms
+  gather_facts: true
 
   tasks:
-   - bigip_node:
-       host: "{{ ansible_eth1.ipv4.address }}"
-       name: "{{ inventory_hostname }}"
-       password: admin
-       server: f5
-       user: admin
-       validate_certs: no
-       state: absent
-     when: ansible_os_family == "RedHat"
-     delegate_to: localhost
-   
-   - bigip_node:
-       host: "{{ ansible_ip_addresses[2] }}"
-       name: "{{ inventory_hostname }}"
-       password: admin
-       server: f5
-       user: admin
-       validate_certs: no
-       state: absent
-     when: ansible_os_family == "Windows"
-     delegate_to: localhost
-   
-   
-#   - debug: var=ansible_distribution
-#   - debug: var=ansible_ip_addresses[2]
+    - when: ansible_os_family == "RedHat"
+      delegate_to: localhost
+      f5networks.f5_modules.bigip_node:
+        host: "{{ ansible_eth1.ipv4.address }}"
+        name: "{{ inventory_hostname }}"
+        password: admin
+        server: f5
+        user: admin
+        validate_certs: false
+        state: absent
 
-#  - debug: var=ansible_eth1.ipv4.address
-#  - debug: var=ansible_devices.vda.partitions.vda1.size 
+    - when: ansible_os_family == "Windows"
+      delegate_to: localhost
+
+      #   - debug: var=ansible_distribution
+      #   - debug: var=ansible_ip_addresses[2]
+
+      #  - debug: var=ansible_eth1.ipv4.address
+      #  - debug: var=ansible_devices.vda.partitions.vda1.size 
+      f5networks.f5_modules.bigip_node:
+        host: "{{ ansible_ip_addresses[2] }}"
+        name: "{{ inventory_hostname }}"
+        password: admin
+        server: f5
+        user: admin
+        validate_certs: false
+        state: absent

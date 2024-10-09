@@ -3,9 +3,7 @@
   hosts: localhost
   connection: local
 
-  tasks: 
-  - name: clone VMs
-    debug: 
-      msg: "VMs are cloned and configured" 
-
-
+  tasks:
+    - name: clone VMs
+      ansible.builtin.debug:
+        msg: VMs are cloned and configured

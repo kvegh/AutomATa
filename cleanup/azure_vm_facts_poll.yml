@@ -3,15 +3,15 @@
   hosts: localhost
 
   tasks:
-  - name: running the facts module
-    azure_rm_virtualmachineimage_info: 
-      location: westeurope
-      publisher: RedHat
-      offer: RHEL
-      sku: "{{ release }}"
+    - name: running the facts module
+      azure_rm_virtualmachineimage_info:
+        location: westeurope
+        publisher: RedHat
+        offer: RHEL
+        sku: "{{ release }}"
       # version: 8.0.2019050711
-    register: vm_results
+      register: vm_results
 
-  - name: return data
-    debug: 
-      var: vm_results
+    - name: return data
+      debug:
+        var: vm_results

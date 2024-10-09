@@ -3,7 +3,6 @@
   hosts: all
   become: true
   tasks:
-
     - name: Install libselinux-python, Ansible clients need this on RHEL
       package:
         name: libselinux-python
@@ -11,7 +10,7 @@
 
     - name: Pull in the Red Hat Portal credentials from home directory
       include_vars:
-        file: "~/redhat-portal-creds.yml"
+        file: ~/redhat-portal-creds.yml
 
     - name: Register with and autosubscribe to RHSM
       redhat_subscription:

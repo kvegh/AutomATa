@@ -1,33 +1,33 @@
 ---
 - name: manage ssh keys
   hosts: ansible-h
-# connection: local
+  # connection: local
   vars:
     host_name: hetzner
 
   tasks:
     - name: remove ssh known_hosts entries locally
-      known_hosts:
+      ansible.builtin.known_hosts:
         name: "{{ host_name }}"
-        state: absent 
+        state: absent
 
     - name: scan for keys
       # shell: ssh-keyscan -t ecdsa  {{ item }},$(dig +short {{ item }})
-      shell: ssh-keyscan -t ecdsa  {{ host_name }} 
-      # with_items: "{{ groups['rhel_vms'] }}"
       register: ssh_key_scanned
+      ansible.builtin.shell: ssh-keyscan -t ecdsa  {{ host_name }}
 
-    - debug: var=ssh_key_scanned
+    - ansible.builtin.debug:
+        var: ssh_key_scanned
 
     - name: add ssh known_hosts entries locally
-      known_hosts:
+      ansible.builtin.known_hosts:
         name: "{{ host_name }}"
         state: present
         path: /var/lib/awx/.ssh/known_hosts
         key: "{{ ssh_key_scanned.stdout }}"
 
     - name: fix known_host ownership
-      file: 
+      ansible.builtin.file:
         path: /var/lib/awx/.ssh/known_hosts
         owner: awx
-        group: awx 
+        group: awx
